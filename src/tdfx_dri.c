@@ -1,4 +1,4 @@
-/* $XFree86$ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/tdfx/tdfx_dri.c,v 1.26 2003/09/28 20:16:01 alanh Exp $ */
 
 #include "xf86.h"
 #include "xf86_OSproc.h"

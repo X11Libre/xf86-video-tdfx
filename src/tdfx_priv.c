@@ -1,4 +1,4 @@
-/* $XFree86$ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/tdfx/tdfx_priv.c,v 1.16 2001/05/21 21:43:55 dawes Exp $ */
 
 
 #include "xf86.h"

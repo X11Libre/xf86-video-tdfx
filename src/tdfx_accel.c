@@ -1,4 +1,4 @@
-/* $XFree86$ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/tdfx/tdfx_accel.c,v 1.20 2001/10/28 03:33:49 tsi Exp $ */
 
 /* All drivers should typically include these */
 #include "xf86.h"
