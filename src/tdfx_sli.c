@@ -1,4 +1,4 @@
-/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/tdfx/tdfx_sli.c,v 1.7 2001/03/21 17:02:26 dawes Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/tdfx/tdfx_sli.c,v 1.6 2000/12/15 15:19:35 dawes Exp $ */
 
 #include "xf86.h"
 #include "xf86_ansic.h"
