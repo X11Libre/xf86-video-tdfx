@@ -264,6 +264,7 @@ static const char *driSymbols[] = {
     "DRIScreenInit",
     "DRIUnlock",
     "GlxSetVisualConfigs",
+    "DRICreatePCIBusID",
     NULL
 };
 
@@ -279,7 +280,7 @@ static XF86ModuleVersionInfo tdfxVersRec =
   MODULEVENDORSTRING,
   MODINFOSTRING1,
   MODINFOSTRING2,
-  XF86_VERSION_CURRENT,
+  XORG_VERSION_CURRENT,
   TDFX_MAJOR_VERSION, TDFX_MINOR_VERSION, TDFX_PATCHLEVEL,
   ABI_CLASS_VIDEODRV,
   ABI_VIDEODRV_VERSION,

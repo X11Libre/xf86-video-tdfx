@@ -796,7 +796,7 @@ TDFXDisplayVideoOverlay(
     int dudx, dvdy;
 
     dudx = (src_w << 20) / drw_w;
-    /* subract 1 to eliminate garbage on last line */
+    /* subtract 1 to eliminate garbage on last line */
     dvdy = (( src_h - 1 )<< 20) / drw_h; 
 
     offset += ((left >> 16) & ~1) << 1;
