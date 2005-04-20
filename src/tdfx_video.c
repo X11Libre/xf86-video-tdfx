@@ -1,10 +1,10 @@
-/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/tdfx/tdfx_video.c,v 1.17 2003/04/23 21:51:47 tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/tdfx/tdfx_video.c,v 1.20tsi Exp $ */
 
 #include "xf86.h"
 #include "tdfx.h"
 #include "dixstruct.h"
 
-#include "Xv.h"
+#include <X11/extensions/Xv.h>
 #include "fourcc.h"
 
 static Atom xvColorKey, xvFilterQuality;
@@ -239,7 +239,7 @@ TDFXSetupImageVideoOverlay(ScreenPtr pScreen)
     pTDFX->overlayAdaptor = adapt;
 
     pPriv = (TDFXPortPrivPtr)(adapt->pPortPrivates[0].ptr);
-    REGION_INIT(pScreen, &(pPriv->clip), NullBox, 0);
+    REGION_NULL(pScreen, &(pPriv->clip));
 
     TDFXResetVideoOverlay(pScrn);
 
@@ -258,7 +258,7 @@ TDFXSetupImageVideoTexture(ScreenPtr pScreen)
         return NULL;
 
     adapt->type = XvWindowMask | XvInputMask | XvImageMask;
-    adapt->flags = 0;
+    adapt->flags = VIDEO_OVERLAID_IMAGES;
     adapt->name = "3dfx Video Texture";
     adapt->nPorts = TDFX_MAX_TEXTURE_PORTS;
     adapt->nEncodings = sizeof(TextureEncoding) / sizeof(XF86VideoEncodingRec);
@@ -507,9 +507,6 @@ static void
 TDFXStopVideoTexture(ScrnInfoPtr pScrn, pointer data, Bool cleanup)
 {
   TDFXPtr pTDFX = TDFXPTR(pScrn);
-  TDFXPortPrivPtr pPriv = (TDFXPortPrivPtr)data;
-
-  REGION_EMPTY(pScrn->pScreen, &pPriv->clip);
 
   if (cleanup) {
      if(pTDFX->textureBuffer) {
@@ -537,6 +534,7 @@ TDFXScreenToScreenYUVStretchBlit (ScrnInfoPtr pScrn,
    INT32 src_h = (src_y2 - src_y1) & 0x1FFF;
    INT32 dst_w = (dst_x2 - dst_x1) & 0x1FFF;
    INT32 dst_h = (dst_y2 - dst_y1) & 0x1FFF;
+
    /* Setup for blit src and dest */
    TDFXMakeRoom(pTDFX, 4);
    DECLARE(SSTCP_DSTSIZE|SSTCP_SRCSIZE|SSTCP_DSTXY|SSTCP_COMMAND/*|SSTCP_COMMANDEXTRA*/);
@@ -798,7 +796,8 @@ TDFXDisplayVideoOverlay(
     int dudx, dvdy;
 
     dudx = (src_w << 20) / drw_w;
-    dvdy = (src_h << 20) / drw_h;
+    /* subtract 1 to eliminate garbage on last line */
+    dvdy = (( src_h - 1 )<< 20) / drw_h; 
 
     offset += ((left >> 16) & ~1) << 1;
     left = (left & 0x0001ffff) << 3;
@@ -828,7 +827,7 @@ TDFXDisplayVideoOverlay(
     pTDFX->writeLong(pTDFX, VIDDESKTOPOVERLAYSTRIDE, pTDFX->ModeReg.stride);
     pTDFX->writeLong(pTDFX, SST_3D_LEFTOVERLAYBUF, offset & ~3);
     pTDFX->writeLong(pTDFX, VIDINADDR0, offset & ~3);
-    TDFXTRACE("TDFXDisplayVideoOverlay: done, offset=0x%x\n");
+    TDFXTRACE("TDFXDisplayVideoOverlay: done, offset=0x%x\n", offset);
 }
 
 
@@ -890,7 +889,7 @@ TDFXPutImageOverlay(
    TDFXPortPrivPtr pPriv = (TDFXPortPrivPtr)data;
    INT32 xa, xb, ya, yb;
    unsigned char *dst_start;
-   int pitch, new_size, offset;
+   int new_size, offset;
    int s2offset = 0, s3offset = 0;
    int srcPitch = 0, srcPitch2 = 0;
    int dstPitch;
@@ -936,7 +935,6 @@ TDFXPutImageOverlay(
    dstBox.y2 -= pScrn->frameY0;
 
    bpp = pScrn->bitsPerPixel >> 3;
-   pitch = bpp * pScrn->displayWidth;
 
    switch(id) {
    case FOURCC_YV12:
@@ -1165,7 +1163,7 @@ TDFXAllocateSurface(
 ){
     TDFXPtr pTDFX = TDFXPTR(pScrn);
     FBLinearPtr linear;
-    int pitch, fbpitch, size, bpp;
+    int pitch, size, bpp;
     OffscreenPrivPtr pPriv;
 
     if((w > 2048) || (h > 2048))
@@ -1174,7 +1172,6 @@ TDFXAllocateSurface(
     w = (w + 1) & ~1;
     pitch = ((w << 1) + 15) & ~15;
     bpp = pScrn->bitsPerPixel >> 3;
-    fbpitch = bpp * pScrn->displayWidth;
     size = ((pitch * h) + bpp - 1) / bpp;
 
     if(!(linear = TDFXAllocateMemoryLinear(pScrn, NULL, size)))
