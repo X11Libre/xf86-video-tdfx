@@ -138,7 +138,7 @@ static void TDFXBlockHandler(int, pointer, pointer, pointer);
 static void TDFXDisplayPowerManagementSet(ScrnInfoPtr pScrn, 
 					int PowerManagermentMode, int flags);
 
-DriverRec TDFX = {
+_X_EXPORT DriverRec TDFX = {
   TDFX_VERSION,
   TDFX_DRIVER_NAME,
   TDFXIdentify,
@@ -288,7 +288,7 @@ static XF86ModuleVersionInfo tdfxVersRec =
   {0,0,0,0}
 };
 
-XF86ModuleData tdfxModuleData = {&tdfxVersRec, tdfxSetup, 0};
+_X_EXPORT XF86ModuleData tdfxModuleData = {&tdfxVersRec, tdfxSetup, 0};
 
 static pointer
 tdfxSetup(pointer module, pointer opts, int *errmaj, int *errmin)
