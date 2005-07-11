@@ -1,3 +1,7 @@
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
+
 #define USE_INT10 1
 #define USE_PCIVGAIO 1
 
