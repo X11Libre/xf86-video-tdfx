@@ -44,13 +44,15 @@ AC_ARG_ENABLE(dri, AS_HELP_STRING([--enable-dri],
 AM_CONDITIONAL(DRI, test "x$DRI" = "xyes")
 if test "x$DRI" = "xyes" ; then
     AC_DEFINE(XF86DRI,1,[Enable DRI support])
+    DRM_CFLAGS=$(pkg-config --cflags libdrm)
+    DRI_CFLAGS=$(pkg-config --cflags xf86driproto)
 fi
 
 AC_ARG_ENABLE(xv, AS_HELP_STRING([--enable-xv],
               [Build XVideo support (default: yes)]),
               [XV="yes"],[XV="yes"])
 AM_CONDITIONAL(XV, [test "x$XV" = "xyes"])
-if test "x$DRI" = "xyes" ; then
+if test "x$XV" = "xyes" ; then
     AC_DEFINE(XV,1,[Enable XV support])
 fi
 
@@ -60,7 +62,7 @@ driverdir=$(pkg-config --variable=driverdir xorg-server)
 AC_SUBST([driverdir])
 sdkdir=$(pkg-config --variable=sdkdir xorg-server)
 
-CFLAGS="$XORG_CFLAGS"' -I$(top_srcdir)/src'
+CFLAGS="$XORG_CFLAGS $DRM_CFLAGS $DRI_CFLAGS"' -I$(top_srcdir)/src'
 INCLUDES="$XORG_INCS -I${sdkdir} "'-I$(top_srcdir)/src -I$(prefix)/include'
 AC_SUBST([CFLAGS])
 AC_SUBST([INCLUDES])
