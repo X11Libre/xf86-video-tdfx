@@ -27,49 +27,72 @@ AC_INIT([xf86-video-tdfx],
         xf86-video-tdfx)
 
 AC_CONFIG_SRCDIR([Makefile.am])
+AM_CONFIG_HEADER([config.h])
+AC_CONFIG_AUX_DIR(.)
+
 AM_INIT_AUTOMAKE([dist-bzip2])
 
 AM_MAINTAINER_MODE
-
-AM_CONFIG_HEADER([config.h])
-AC_CONFIG_AUX_DIR(.)
 
 # Checks for programs.
 AC_PROG_LIBTOOL
 AC_PROG_CC
 
-AC_ARG_ENABLE(dri, AS_HELP_STRING([--enable-dri],
-              [Build direct rendering support (default: yes)]),
-              [DRI=$enableval],[DRI="yes"])
-AM_CONDITIONAL(DRI, test "x$DRI" = "xyes")
-if test "x$DRI" = "xyes" ; then
-    AC_DEFINE(XF86DRI,1,[Enable DRI support])
-    DRM_CFLAGS=$(pkg-config --cflags libdrm)
-    DRI_CFLAGS=$(pkg-config --cflags xf86driproto)
-fi
+AH_TOP([#include "xorg-server.h"])
 
-AC_ARG_ENABLE(xv, AS_HELP_STRING([--enable-xv],
-              [Build XVideo support (default: yes)]),
-              [XV="yes"],[XV="yes"])
-AM_CONDITIONAL(XV, [test "x$XV" = "xyes"])
-if test "x$XV" = "xyes" ; then
-    AC_DEFINE(XV,1,[Enable XV support])
-fi
+AC_ARG_WITH(xorg-module-dir,
+            AC_HELP_STRING([--with-xorg-module-dir=DIR],
+                           [Default xorg module directory [[default=$libdir/xorg/modules]]]),
+            [moduledir="$withval"],
+            [moduledir="$libdir/xorg/modules"])
 
+AC_ARG_ENABLE(dri, AC_HELP_STRING([--disable-dri],
+                                  [Disable DRI support [[default=auto]]]),
+              [DRI="$enableval"],
+              [DRI=auto])
 # Checks for pkg-config packages
-PKG_CHECK_MODULES(XORG, xorg-server)
-driverdir=$(pkg-config --variable=driverdir xorg-server)
-AC_SUBST([driverdir])
+PKG_CHECK_MODULES(XORG, [xorg-server xproto])
 sdkdir=$(pkg-config --variable=sdkdir xorg-server)
-
-CFLAGS="$XORG_CFLAGS $DRM_CFLAGS $DRI_CFLAGS"' -I$(top_srcdir)/src'
-INCLUDES="$XORG_INCS -I${sdkdir} "'-I$(top_srcdir)/src -I$(prefix)/include'
-AC_SUBST([CFLAGS])
-AC_SUBST([INCLUDES])
 
 # Checks for libraries.
 
 # Checks for header files.
 AC_HEADER_STDC
 
-AC_OUTPUT([Makefile src/Makefile man/Makefile])
+if test "$DRI" != no; then
+        AC_CHECK_FILE([${sdkdir}/dri.h],
+                      [have_dri_h="yes"], [have_dri_h="no"])
+        AC_CHECK_FILE([${sdkdir}/sarea.h],
+                      [have_sarea_h="yes"], [have_sarea_h="no"])
+        AC_CHECK_FILE([${sdkdir}/dristruct.h],
+                      [have_dristruct_h="yes"], [have_dristruct_h="no"])
+fi
+
+AC_MSG_CHECKING([whether to include DRI support])
+if test x$DRI = xauto; then
+        if test "$ac_cv_header_dri_h" = yes -a \
+                "$ac_cv_header_sarea_h" = yes -a \
+                "$ac_cv_header_dristruct_h" = yes; then
+                DRI="yes"
+        else
+                DRI="no"
+        fi
+fi
+AC_MSG_RESULT([$DRI])
+
+AM_CONDITIONAL(DRI, test x$DRI = xyes)
+if test "$DRI" = yes; then
+        PKG_CHECK_MODULES(DRI, [libdrm])
+        AC_DEFINE(XF86DRI,1,[Enable DRI driver support])
+        AC_DEFINE(XF86DRI_DEVEL,1,[Enable developmental DRI driver support])
+fi
+
+AC_SUBST([DRI_CFLAGS])
+AC_SUBST([XORG_CFLAGS])
+AC_SUBST([moduledir])
+
+AC_OUTPUT([
+	Makefile
+	src/Makefile
+	man/Makefile
+])

@@ -18,39 +18,32 @@
 #  IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
 #  CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-
 # this is obnoxious:
 # -module lets us name the module exactly how we want
 # -avoid-version prevents gratuitous .0.0.0 version numbers on the end
 # _ladir passes a dummy rpath to libtool so the thing will actually link
 # TODO: -nostdlib/-Bstatic/-lgcc platform magic, not installing the .a, etc.
+AM_CFLAGS = @XORG_CFLAGS@ @DRI_CFLAGS@
 tdfx_drv_la_LTLIBRARIES = tdfx_drv.la
 tdfx_drv_la_LDFLAGS = -module -avoid-version
-tdfx_drv_ladir = $(driverdir)
-
-if DRI
-TDFX_DRI_SOURCES = \
-        tdfx_dri.c \
-        tdfx_dri.h \
-	tdfx_dripriv.h
-endif
-
-if XV
-TDFX_XV_SOURCES = \
-	tdfx_video.c
-endif
+tdfx_drv_ladir = @moduledir@/drivers
 
 tdfx_drv_la_SOURCES = \
-	tdfx.h \
-	tdfx_accel.c \
-	tdfx_defs.h \
-	tdfx_dga.c \
-	tdfx_driver.c \
-	tdfx_hwcurs.c \
-	tdfx_io.c \
-	tdfx_priv.c \
-	tdfx_priv.h \
-	tdfx_sli.c \
-	$(TDFX_DRI_SOURCES) \
-	$(TDFX_XV_SOURCES)
+         tdfx_accel.c \
+         tdfxdefs.h \
+         tdfx_dga.c \
+         tdfx_driver.c \
+         tdfx.h \
+         tdfx_hwcurs.c \
+         tdfx_io.c \
+         tdfx_priv.c \
+         tdfx_priv.h \
+         tdfx_sli.c \
+         tdfx_video.c
 
+if DRI
+tdfx_drv_la_SOURCES += \
+         tdfx_dri.c \
+         tdfx_dri.h \
+         tdfx_dripriv.h
+endif
