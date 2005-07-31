@@ -5,7 +5,7 @@
 
    Copyright: 1998,1999
 */
-/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/tdfx/tdfx.h,v 1.27 2002/10/17 01:02:08 dawes Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/tdfx/tdfx.h,v 1.26 2002/01/25 21:56:11 tsi Exp $ */
 
 #ifndef _TDFX_H_
 #define _TDFX_H_
@@ -19,7 +19,6 @@
 #include "xf86drm.h"
 #include "sarea.h"
 #define _XF86DRI_SERVER_
-#include "xf86dri.h"
 #include "dri.h"
 #include "GL/glxint.h"
 #include "tdfx_dri.h"
