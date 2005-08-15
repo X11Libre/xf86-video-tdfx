@@ -29,7 +29,7 @@
 #define TDFX_NAME "TDFX"
 #define TDFX_DRIVER_NAME "tdfx"
 #define TDFX_MAJOR_VERSION 1
-#define TDFX_MINOR_VERSION 0
+#define TDFX_MINOR_VERSION 1
 #define TDFX_PATCHLEVEL 0
 
 struct _TDFXRec;

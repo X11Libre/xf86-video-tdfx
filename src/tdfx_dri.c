@@ -445,7 +445,7 @@ Bool TDFXDRIScreenInit(ScreenPtr pScreen)
     xf86DrvMsg(pScreen->myNum, X_ERROR, "drmAddMap failed, disabling DRI.\n");
     return FALSE;
   }
-  xf86DrvMsg(pScreen->myNum, X_INFO, "[drm] Registers = 0x%08lx\n",
+  xf86DrvMsg(pScreen->myNum, X_INFO, "[drm] Registers = 0x%08x\n",
 	       pTDFXDRI->regs);
 
   if (!(TDFXInitVisualConfigs(pScreen))) {
