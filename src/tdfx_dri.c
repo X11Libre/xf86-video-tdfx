@@ -595,6 +595,10 @@ TDFXDRIMoveBuffers(WindowPtr pParent, DDXPointRec ptOldOrg,
   pTDFX->AccelInfoRec->NeedToSync = TRUE;
 }
 
+/*
+ * the FullScreen DRI code is dead; this is just left in place to show how
+ * to set up SLI mode.
+ */
 static Bool
 TDFXDRIOpenFullScreen(ScreenPtr pScreen)
 {
