@@ -229,6 +229,10 @@ typedef struct _TDFXRec {
   XF86VideoAdaptorPtr textureAdaptor;
   ScreenBlockHandlerProcPtr BlockHandler;
   OptionInfoPtr Options;
+
+  ScreenWakeupHandlerProcPtr coreWakeupHandler;
+  ScreenBlockHandlerProcPtr coreBlockHandler;
+
 } TDFXRec;
 
 typedef struct {
