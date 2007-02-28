@@ -15,6 +15,7 @@
 
 #include "xf86PciInfo.h"
 #include "xf86Pci.h"
+#include "xf86DDC.h"
 #include "xf86xv.h"
 #include "tdfxdefs.h"
 
@@ -232,6 +233,8 @@ typedef struct _TDFXRec {
 
   ScreenWakeupHandlerProcPtr coreWakeupHandler;
   ScreenBlockHandlerProcPtr coreBlockHandler;
+
+  I2CBusPtr pI2CBus;
 
 } TDFXRec;
 

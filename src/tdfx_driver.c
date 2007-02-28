@@ -217,6 +217,13 @@ static const char *ramdacSymbols[] = {
 static const char *ddcSymbols[] = {
     "xf86PrintEDID",
     "xf86SetDDCproperties",
+    "xf86DoEDID_DDC2",
+    NULL
+};
+
+static const char *i2cSymbols[] = {
+    "xf86CreateI2CBusRec",
+    "xf86I2CBusInit",
     NULL
 };
 
@@ -665,6 +672,81 @@ TDFXInitChips(ScrnInfoPtr pScrn)
   }
 }
 
+void
+TDFXPutBits(I2CBusPtr b, int  scl, int  sda)
+{
+  TDFXPtr pTDFX= b->DriverPrivate.ptr;
+  CARD32 reg;
+
+  reg = pTDFX->readLong(pTDFX, VIDSERIALPARALLELPORT);
+  reg = (reg & ~(VSP_SDA0_OUT | VSP_SCL0_OUT)) |
+  	(scl ? VSP_SCL0_OUT : 0) |
+  	(sda ? VSP_SDA0_OUT : 0);
+  pTDFX->writeLong(pTDFX, VIDSERIALPARALLELPORT, reg);
+}
+
+void
+TDFXGetBits(I2CBusPtr b, int *scl, int *sda)
+{
+  TDFXPtr pTDFX = b->DriverPrivate.ptr;
+  CARD32 reg;
+
+  reg = pTDFX->readLong(pTDFX, VIDSERIALPARALLELPORT);
+  *sda = (reg & VSP_SDA0_IN) ? 1 : 0;
+  *scl = (reg & VSP_SCL0_IN) ? 1 : 0;
+}
+
+Bool TDFXI2cInit(ScrnInfoPtr pScrn)
+{
+  TDFXPtr pTDFX = TDFXPTR(pScrn);
+
+  if (!(pTDFX->pI2CBus = xf86CreateI2CBusRec()))
+  {
+    xf86DrvMsg(pScrn->scrnIndex, X_WARNING, "Unable to allocate I2C Bus record.\n");
+    return FALSE;
+  }
+
+  /* Fill in generic structure fields */
+  pTDFX->pI2CBus->BusName           = "DDC";
+  pTDFX->pI2CBus->scrnIndex         = pScrn->scrnIndex;
+  pTDFX->pI2CBus->I2CPutBits        = TDFXPutBits;
+  pTDFX->pI2CBus->I2CGetBits        = TDFXGetBits;
+  pTDFX->pI2CBus->DriverPrivate.ptr = pTDFX;
+
+  /* longer timeouts as per the vesa spec */
+  pTDFX->pI2CBus->ByteTimeout = 2200; /* VESA DDC spec 3 p. 43 (+10 %) */
+  pTDFX->pI2CBus->StartTimeout = 550;
+  pTDFX->pI2CBus->BitTimeout = 40;
+  pTDFX->pI2CBus->ByteTimeout = 40;
+  pTDFX->pI2CBus->AcknTimeout = 40;
+
+  if (!xf86I2CBusInit(pTDFX->pI2CBus)) {
+    xf86DrvMsg(pScrn->scrnIndex, X_WARNING, "Unable to init I2C Bus.\n");
+    return FALSE;
+  }
+  return TRUE;
+}
+
+static xf86MonPtr doTDFXDDC(ScrnInfoPtr pScrn)
+{
+  TDFXPtr pTDFX = TDFXPTR(pScrn);
+  I2CBusPtr pI2CBus;
+  xf86MonPtr pMon = NULL;
+  CARD32 reg;
+
+  reg = pTDFX->readLong(pTDFX, VIDSERIALPARALLELPORT);
+  pTDFX->writeLong(pTDFX, VIDSERIALPARALLELPORT, reg | VSP_ENABLE_IIC0);
+
+  pMon = xf86DoEDID_DDC2(pScrn->scrnIndex, pTDFX->pI2CBus);
+
+  if (pMon == NULL)
+    xf86Msg(X_WARNING, "No DDC2 capable monitor found\n");
+
+  pTDFX->writeLong(pTDFX, VIDSERIALPARALLELPORT, reg);
+
+  return pMon;
+}
+
 /*
  * TDFXPreInit --
  *
@@ -677,6 +759,7 @@ TDFXPreInit(ScrnInfoPtr pScrn, int flags)
 {
   TDFXPtr pTDFX;
   ClockRangePtr clockRanges;
+  xf86MonPtr pMon;
   int i;
   MessageType from;
   int flags24;
@@ -978,34 +1061,6 @@ TDFXPreInit(ScrnInfoPtr pScrn, int flags)
   availableMem = pScrn->videoRam - 4096 -
 		 (((255 <= CMDFIFO_PAGES) ? 255 : CMDFIFO_PAGES) << 12);
 
-  i = xf86ValidateModes(pScrn, pScrn->monitor->Modes,
-			pScrn->display->modes, clockRanges,
-			0, 320, 2048, 16*pScrn->bitsPerPixel, 
-			200, 2047,
-			pScrn->display->virtualX, pScrn->display->virtualY,
-			availableMem, LOOKUP_BEST_REFRESH);
-
-  if (i==-1) {
-    TDFXFreeRec(pScrn);
-    return FALSE;
-  }
-
-  xf86PruneDriverModes(pScrn);
-
-  if (!i || !pScrn->modes) {
-    xf86DrvMsg(pScrn->scrnIndex, X_ERROR, "No valid modes found\n");
-    TDFXFreeRec(pScrn);
-    return FALSE;
-  }
-
-  xf86SetCrtcForModes(pScrn, 0);
-
-  pScrn->currentMode = pScrn->modes;
-
-  xf86PrintModes(pScrn);
-
-  xf86SetDpi(pScrn, 0, 0);
-
   if (!xf86LoadSubModule(pScrn, "fb")) {
     TDFXFreeRec(pScrn);
     return FALSE;
@@ -1046,28 +1101,68 @@ TDFXPreInit(ScrnInfoPtr pScrn, int flags)
     xf86LoaderReqSymLists(ramdacSymbols, NULL);
   }
 
-#if USE_INT10
-#if !defined(__powerpc__)
-  /* Load DDC if needed */
-  /* This gives us DDC1 - we should be able to get DDC2B using i2c */
+  /* Load DDC and I2C for monitor ID */
+  if (!xf86LoadSubModule(pScrn, "i2c")) {
+    TDFXFreeRec(pScrn);
+    return FALSE;
+  }
+  xf86LoaderReqSymLists(i2cSymbols, NULL);
+
   if (!xf86LoadSubModule(pScrn, "ddc")) {
     TDFXFreeRec(pScrn);
     return FALSE;
   }
   xf86LoaderReqSymLists(ddcSymbols, NULL);
 
-  /* Initialize DDC1 if possible */
-  if (xf86LoadSubModule(pScrn, "vbe")) {
-      xf86MonPtr pMon;
+  /* try to read read DDC2 data */
+  if (TDFXI2cInit(pScrn)) {
+    pMon = doTDFXDDC(pScrn);
+    if (pMon != NULL)
+      xf86SetDDCproperties(pScrn,xf86PrintEDID(pMon));
+  } else {
+    /* try to use vbe if we didn't find anything */
+#if USE_INT10
+#if !defined(__powerpc__)
+    /* Initialize DDC1 if possible */
+    if (xf86LoadSubModule(pScrn, "vbe")) {
       vbeInfoPtr pVbe = VBEInit(NULL,pTDFX->pEnt->index);
 
       xf86LoaderReqSymLists(vbeSymbols, NULL);
       pMon = vbeDoEDID(pVbe, NULL);
       vbeFree(pVbe);
       xf86SetDDCproperties(pScrn,xf86PrintEDID(pMon));
+    }
+#endif
+#endif
   }
-#endif
-#endif
+
+  i = xf86ValidateModes(pScrn, pScrn->monitor->Modes,
+			pScrn->display->modes, clockRanges,
+			0, 320, 2048, 16*pScrn->bitsPerPixel, 
+			200, 2047,
+			pScrn->display->virtualX, pScrn->display->virtualY,
+			availableMem, LOOKUP_BEST_REFRESH);
+
+  if (i==-1) {
+    TDFXFreeRec(pScrn);
+    return FALSE;
+  }
+
+  xf86PruneDriverModes(pScrn);
+
+  if (!i || !pScrn->modes) {
+    xf86DrvMsg(pScrn->scrnIndex, X_ERROR, "No valid modes found\n");
+    TDFXFreeRec(pScrn);
+    return FALSE;
+  }
+
+  xf86SetCrtcForModes(pScrn, 0);
+
+  pScrn->currentMode = pScrn->modes;
+
+  xf86PrintModes(pScrn);
+
+  xf86SetDpi(pScrn, 0, 0);
 
   if (xf86ReturnOptValBool(pTDFX->Options, OPTION_USE_PIO, FALSE)) {
     pTDFX->usePIO=TRUE;
