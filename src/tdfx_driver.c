@@ -148,7 +148,8 @@ _X_EXPORT DriverRec TDFX = {
   TDFXProbe,
   TDFXAvailableOptions,
   NULL,
-  0
+  0,
+  NULL
 };
 
 /* Chipsets */
@@ -309,7 +310,7 @@ tdfxSetup(pointer module, pointer opts, int *errmaj, int *errmin)
 
     if (!setupDone) {
 	setupDone = TRUE;
-	xf86AddDriver(&TDFX, module, 0);
+	xf86AddDriver(&TDFX, module, 1);
 
 	/*
 	 * Modules that this driver always requires may be loaded here
