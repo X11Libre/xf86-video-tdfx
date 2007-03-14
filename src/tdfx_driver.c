@@ -352,12 +352,14 @@ tdfxSetup(pointer module, pointer opts, int *errmaj, int *errmin)
  * These two functions create and destroy that private data.
  *
  */
-static Bool
-TDFXGetRec(ScrnInfoPtr pScrn) {
-  if (pScrn->driverPrivate) return TRUE;
+static TDFXPtr
+TDFXGetRec(ScrnInfoPtr pScrn)
+{
+    if (pScrn->driverPrivate == NULL) {
+	pScrn->driverPrivate = xnfcalloc(sizeof(TDFXRec), 1);
+    }
 
-  pScrn->driverPrivate = xnfcalloc(sizeof(TDFXRec), 1);
-  return TRUE;
+    return (TDFXPtr) pScrn->driverPrivate;
 }
 
 static void
@@ -781,11 +783,11 @@ TDFXPreInit(ScrnInfoPtr pScrn, int flags)
   if (pScrn->numEntities != 1) return FALSE;
 
   /* Allocate driverPrivate */
-  if (!TDFXGetRec(pScrn)) {
+  pTDFX = TDFXGetRec(pScrn);
+  if (pTDFX == NULL) {
     return FALSE;
   }
 
-  pTDFX = TDFXPTR(pScrn);
 
   pTDFX->initDone=FALSE;
   pTDFX->pEnt = xf86GetEntityInfo(pScrn->entityList[0]);
