@@ -1223,13 +1223,11 @@ TDFXPreInit(ScrnInfoPtr pScrn, int flags)
 static Bool
 TDFXMapMem(ScrnInfoPtr pScrn)
 {
-  int mmioFlags, i;
-  TDFXPtr pTDFX;
+    int i;
+    TDFXPtr pTDFX = TDFXPTR(pScrn);
+    const int mmioFlags = VIDMEM_MMIO | VIDMEM_READSIDEEFFECT;
 
   TDFXTRACE("TDFXMapMem start\n");
-  pTDFX = TDFXPTR(pScrn);
-
-  mmioFlags = VIDMEM_MMIO | VIDMEM_READSIDEEFFECT;
 
   for (i=0; i<pTDFX->numChips; i++) {
     pTDFX->MMIOBase[i] = xf86MapPciMem(pScrn->scrnIndex, mmioFlags, 
