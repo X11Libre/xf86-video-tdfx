@@ -36,6 +36,12 @@
 #define TDFX_MINOR_VERSION 3
 #define TDFX_PATCHLEVEL 0
 
+#define PCI_READ_LONG(value, offset, card_index) \
+    (value) = pciReadLong(pTDFX->PciTag[(card_index)], (offset))
+
+#define PCI_WRITE_LONG(value, offset, card_index) \
+    pciWriteLong(pTDFX->PciTag[(card_index)], (offset), (value))
+
 struct _TDFXRec;
 typedef struct _TDFXRec *TDFXPtr;
 
