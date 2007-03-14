@@ -617,13 +617,13 @@ TDFXFindChips(ScrnInfoPtr pScrn, pciVideoPtr match)
 static void
 TDFXInitChips(ScrnInfoPtr pScrn)
 {
-  TDFXPtr pTDFX = TDFXPTR(pScrn);
-  int i;
+    TDFXPtr pTDFX = TDFXPTR(pScrn);
+    int i;
 #if 0
-  int v;
+    int v;
 #endif
-  uint32_t cfgbits, initbits;
-  uint32_t mem0base, mem1base, mem0size, mem0bits, mem1size, mem1bits;
+    uint32_t cfgbits, initbits;
+    uint32_t mem0base, mem1base, mem0size, mem0bits, mem1size, mem1bits;
 
 
     PCI_READ_LONG(cfgbits, CFG_PCI_DECODE, 0);
@@ -631,57 +631,66 @@ TDFXInitChips(ScrnInfoPtr pScrn)
     PCI_READ_LONG(mem1base, CFG_MEM1BASE, 0);
     PCI_READ_LONG(initbits, CFG_INIT_ENABLE, 0);
 
-  xf86DrvMsgVerb(pScrn->scrnIndex, X_INFO, 3,
-		"TDFXInitChips: numchips = %d\n", pTDFX->numChips);
-  xf86DrvMsgVerb(pScrn->scrnIndex, X_INFO, 3,
-		"TDFXInitChips: cfgbits = 0x%08lx, initbits = 0x%08lx\n",
-		cfgbits, initbits);
-  xf86DrvMsgVerb(pScrn->scrnIndex, X_INFO, 3,
-		"TDFXInitChips: mem0base = 0x%08lx, mem1base = 0x%08lx\n",
-		mem0base, mem1base);
-  mem0size=32*1024*1024; /* Registers are always 32MB */
-  mem1size=pScrn->videoRam*1024*2; /* Linear mapping is 2x memory */
-  xf86DrvMsgVerb(pScrn->scrnIndex, X_INFO, 3,
-		"TDFXInitChips: mem0size = 0x%08lx, mem1size = 0x%08lx\n",
-		mem0size, mem1size);
-  mem0bits=TDFXSizeToCfg(mem0size);
-  mem1bits=TDFXSizeToCfg(mem1size)<<4;
-  xf86DrvMsgVerb(pScrn->scrnIndex, X_INFO, 3,
-		"TDFXInitChips: mem0bits = 0x%08lx, mem1bits = 0x%08lx\n",
-		mem0bits, mem1bits);
-  cfgbits=(cfgbits&~(0xFF))|mem0bits|mem1bits;
-  xf86DrvMsgVerb(pScrn->scrnIndex, X_INFO, 3,
-		"TDFXInitChips: cfgbits = 0x%08lx\n", cfgbits);
-  for (i=0; i<pTDFX->numChips; i++) {
+    xf86DrvMsgVerb(pScrn->scrnIndex, X_INFO, 3,
+		   "TDFXInitChips: numchips = %d\n", pTDFX->numChips);
+    xf86DrvMsgVerb(pScrn->scrnIndex, X_INFO, 3,
+		   "TDFXInitChips: cfgbits = 0x%08lx, initbits = 0x%08lx\n",
+		   cfgbits, initbits);
+    xf86DrvMsgVerb(pScrn->scrnIndex, X_INFO, 3,
+		   "TDFXInitChips: mem0base = 0x%08lx, mem1base = 0x%08lx\n",
+		   mem0base, mem1base);
+
+    mem0size = 32 * 1024 * 1024; /* Registers are always 32MB */
+    mem1size = pScrn->videoRam * 1024 * 2; /* Linear mapping is 2x memory */
+
+    xf86DrvMsgVerb(pScrn->scrnIndex, X_INFO, 3,
+		   "TDFXInitChips: mem0size = 0x%08lx, mem1size = 0x%08lx\n",
+		   mem0size, mem1size);
+
+    mem0bits = TDFXSizeToCfg(mem0size);
+    mem1bits = TDFXSizeToCfg(mem1size) << 4;
+
+    xf86DrvMsgVerb(pScrn->scrnIndex, X_INFO, 3,
+		   "TDFXInitChips: mem0bits = 0x%08lx, mem1bits = 0x%08lx\n",
+		   mem0bits, mem1bits);
+
+    cfgbits = (cfgbits & ~(0xFF)) | mem0bits | mem1bits;
+
+    xf86DrvMsgVerb(pScrn->scrnIndex, X_INFO, 3,
+		   "TDFXInitChips: cfgbits = 0x%08lx\n", cfgbits);
+
+    for (i = 0; i < pTDFX->numChips; i++) {
 	PCI_WRITE_LONG(initbits | BIT(10), CFG_INIT_ENABLE, i);
 
 #if 0
-    v=pciReadWord(pTDFX->PciTag[i], CFG_PCI_COMMAND);
-    if (!i)
-      pciWriteWord(pTDFX->PciTag[i], CFG_PCI_COMMAND, v|0x3);
-    else
-      pciWriteWord(pTDFX->PciTag[i], CFG_PCI_COMMAND, v|0x2);
+	v=pciReadWord(pTDFX->PciTag[i], CFG_PCI_COMMAND);
+	if (!i)
+	    pciWriteWord(pTDFX->PciTag[i], CFG_PCI_COMMAND, v | 0x3);
+	else
+	    pciWriteWord(pTDFX->PciTag[i], CFG_PCI_COMMAND, v | 0x2);
 #endif
-    pTDFX->MMIOAddr[i]=mem0base+i*mem0size;
-    xf86DrvMsgVerb(pScrn->scrnIndex, X_INFO, 3,
-		"TDFXInitChips: MMIOAddr[%d] = 0x%08lx\n",
-		i, pTDFX->MMIOAddr[i]);
+
+	pTDFX->MMIOAddr[i] = mem0base + (i * mem0size);
+
+	xf86DrvMsgVerb(pScrn->scrnIndex, X_INFO, 3,
+		       "TDFXInitChips: MMIOAddr[%d] = 0x%08lx\n",
+		       i, pTDFX->MMIOAddr[i]);
 
 	PCI_WRITE_LONG(pTDFX->MMIOAddr[i], CFG_MEM0BASE, i);
 
-    pTDFX->MMIOAddr[i]&=0xFFFFFF00;
-    pTDFX->LinearAddr[i]=mem1base+i*mem1size;
+	pTDFX->MMIOAddr[i] &= 0xFFFFFF00;
+	pTDFX->LinearAddr[i] = mem1base + (i * mem1size);
 
 	PCI_WRITE_LONG(pTDFX->LinearAddr[i], CFG_MEM1BASE, i);
 
-    xf86DrvMsgVerb(pScrn->scrnIndex, X_INFO, 3,
-		"TDFXInitChips: LinearAddr[%d] = 0x%08lx\n",
-		i, pTDFX->LinearAddr[i]);
-    pTDFX->LinearAddr[i]&=0xFFFFFF00;
+	xf86DrvMsgVerb(pScrn->scrnIndex, X_INFO, 3,
+		       "TDFXInitChips: LinearAddr[%d] = 0x%08lx\n",
+		       i, pTDFX->LinearAddr[i]);
+	pTDFX->LinearAddr[i] &= 0xFFFFFF00;
 
 	PCI_WRITE_LONG(cfgbits, CFG_PCI_DECODE, i);
 	PCI_WRITE_LONG(initbits, CFG_INIT_ENABLE, i);
-  }
+    }
 }
 
 void
