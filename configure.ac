@@ -51,6 +51,9 @@ AC_ARG_ENABLE(dri, AC_HELP_STRING([--disable-dri],
                                   [Disable DRI support [[default=auto]]]),
               [DRI="$enableval"],
               [DRI=auto])
+AC_ARG_ENABLE(pciaccess,     AS_HELP_STRING([--enable-pciaccess],
+                             [Enable use of libpciaccess (default: disabled)]),
+			     [PCIACCESS=$enableval], [PCIACCESS=no])
 
 # Checks for extensions
 XORG_DRIVER_CHECK_EXT(RANDR, randrproto)
@@ -61,6 +64,13 @@ XORG_DRIVER_CHECK_EXT(DPMSExtension, xextproto)
 # Checks for pkg-config packages
 PKG_CHECK_MODULES(XORG, [xorg-server >= 1.0.99.901 xproto fontsproto $REQUIRED_MODULES])
 sdkdir=$(pkg-config --variable=sdkdir xorg-server)
+
+AM_CONDITIONAL(PCIACCESS, [test "x$PCIACCESS" = xyes])
+if test "x$PCIACCESS" = xyes; then
+    AC_DEFINE(PCIACCESS, 1, [Use libpciaccess])
+    PKG_CHECK_MODULES([PCIACCESS], [pciaccess >= 0.7.0])
+    XORG_CFLAGS="$XORG_CFLAGS $PCIACCESS_CFLAGS"
+fi
 
 # Checks for libraries.
 
