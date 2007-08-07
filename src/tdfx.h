@@ -32,9 +32,9 @@
 #define TDFX_VERSION 4000
 #define TDFX_NAME "TDFX"
 #define TDFX_DRIVER_NAME "tdfx"
-#define TDFX_MAJOR_VERSION 1
-#define TDFX_MINOR_VERSION 3
-#define TDFX_PATCHLEVEL 0
+#define TDFX_MAJOR_VERSION PACKAGE_VERSION_MAJOR
+#define TDFX_MINOR_VERSION PACKAGE_VERSION_MINOR
+#define TDFX_PATCHLEVEL PACKAGE_VERSION_PATCHLEVEL
 
 /* Macros to aid source compatibilty between pci-rework and "classic" builds.
  */
