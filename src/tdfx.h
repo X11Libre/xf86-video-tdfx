@@ -38,7 +38,7 @@
 
 /* Macros to aid source compatibilty between pci-rework and "classic" builds.
  */
-#ifdef PCIACCESS
+#ifdef XSERVER_LIBPCIACCESS
 #include <pciaccess.h>
 
 #define DEVICE_ID(p) (p)->device_id
@@ -171,7 +171,7 @@ typedef struct TextureData_t {
 
 #define MAXCHIPS 4
 
-#ifdef PCIACCESS
+#ifdef XSERVER_LIBPCIACCESS
 enum tdfx_chips {
     Banshee = 0,
     Voodoo3_2000,
@@ -183,7 +183,7 @@ enum tdfx_chips {
 #endif
 
 typedef struct _TDFXRec {
-#ifdef PCIACCESS
+#ifdef XSERVER_LIBPCIACCESS
     enum tdfx_chips match_id;
     void *MMIOBase[MAXCHIPS];
     void *FbBase;
@@ -200,7 +200,7 @@ typedef struct _TDFXRec {
   int maxClip;
   int MaxClock;
   int ChipType;
-#ifdef PCIACCESS
+#ifdef XSERVER_LIBPCIACCESS
     struct pci_device *PciInfo[MAXCHIPS];
 #else
   pciVideoPtr PciInfo;
@@ -209,7 +209,7 @@ typedef struct _TDFXRec {
   unsigned long MMIOAddr[MAXCHIPS];
   EntityInfoPtr pEnt;
   int numChips;
-#ifndef PCIACCESS
+#ifndef XSERVER_PCIACCESS
   PCITAG PciTag[MAXCHIPS];
 #endif
   Bool Primary;

@@ -345,7 +345,7 @@ Bool TDFXDRIScreenInit(ScreenPtr pScreen)
 
   pDRIInfo->drmDriverName = TDFXKernelDriverName;
   pDRIInfo->clientDriverName = TDFXClientDriverName;
-#ifdef PCIACCESS
+#ifdef XSERVER_LIBPCIACCESS
     pDRIInfo->busIdString = DRICreatePCIBusID(pTDFX->PciInfo[0]);
 #else
   if (xf86LoaderCheckSymbol("DRICreatePCIBusID")) {
@@ -518,7 +518,7 @@ TDFXDRIFinishScreenInit(ScreenPtr pScreen)
   pTDFX->pDRIInfo->driverSwapMethod = DRI_HIDE_X_CONTEXT;
 
   pTDFXDRI=(TDFXDRIPtr)pTDFX->pDRIInfo->devPrivate;
-#ifdef PCIACCESS
+#ifdef XSERVER_LIBPCIACCESS
   pTDFXDRI->deviceID = DEVICE_ID(pTDFX->PciInfo[0]);
 #else
   pTDFXDRI->deviceID = DEVICE_ID(pTDFX->PciInfo);

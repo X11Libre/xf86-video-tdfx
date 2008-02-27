@@ -112,7 +112,7 @@ static const OptionInfoRec *	TDFXAvailableOptions(int chipid, int busid);
 static void TDFXIdentify(int flags);
 
 /* Identify if there is any hardware present that I know how to drive. */
-#ifdef PCIACCESS
+#ifdef XSERVER_LIBPCIACCESS
 static Bool TDFXPciProbe(DriverPtr drv, int entity_num,
     struct pci_device *dev, intptr_t match_data);
 #else
@@ -150,7 +150,7 @@ static void TDFXBlockHandler(int, pointer, pointer, pointer);
 static void TDFXDisplayPowerManagementSet(ScrnInfoPtr pScrn, 
 					int PowerManagermentMode, int flags);
 
-#ifdef PCIACCESS
+#ifdef XSERVER_LIBPCIACCESS
 #define TDFX_DEVICE_MATCH(d, sub, i) \
     { 0x121A, (d), PCI_MATCH_ANY, (sub), 0, 0, (i) }
 
@@ -181,7 +181,7 @@ _X_EXPORT DriverRec TDFX = {
   TDFX_VERSION,
   TDFX_DRIVER_NAME,
   TDFXIdentify,
-#ifdef PCIACCESS
+#ifdef XSERVER_LIBPCIACCESS
   NULL,
 #else
   TDFXProbe,
@@ -192,7 +192,7 @@ _X_EXPORT DriverRec TDFX = {
   0,
   NULL,
 
-#ifdef PCIACCESS
+#ifdef XSERVER_LIBPCIACCESS
   tdfx_device_match,
   TDFXPciProbe
 #endif
@@ -206,7 +206,7 @@ static SymTabRec TDFXChipsets[] = {
   { -1, NULL }
 };
 
-#ifndef PCIACCESS
+#ifndef XSERVER_LIBPCIACCESS
 static PciChipsets TDFXPciChipsets[] = {
   { PCI_CHIP_BANSHEE, PCI_CHIP_BANSHEE, RES_SHARED_VGA },
   { PCI_CHIP_VOODOO3, PCI_CHIP_VOODOO3, RES_SHARED_VGA },
@@ -444,7 +444,7 @@ TDFXProbeDDC(ScrnInfoPtr pScrn, int index)
     }
 }
 
-#ifdef PCIACCESS
+#ifdef XSERVER_LIBPCIACCESS
 /**
  * TDFXPciProbe
  *
@@ -689,7 +689,7 @@ static int TDFXSizeToCfg(int size)
   }
 }
 
-#ifndef PCIACCESS
+#ifndef XSERVER_LIBPCIACCESS
 static void
 TDFXFindChips(ScrnInfoPtr pScrn, pciVideoPtr match)
 {
@@ -888,7 +888,7 @@ TDFXPreInit(ScrnInfoPtr pScrn, int flags)
   MessageType from;
   int flags24;
   rgb defaultWeight = {0, 0, 0};
-#ifdef PCIACCESS
+#ifdef XSERVER_LIBPCIACCESS
     struct pci_device *match;
 #else
   pciVideoPtr match;
@@ -898,7 +898,7 @@ TDFXPreInit(ScrnInfoPtr pScrn, int flags)
   TDFXTRACE("TDFXPreInit start\n");
   if (pScrn->numEntities != 1) return FALSE;
 
-#ifndef PCIACCESS
+#ifndef XSERVER_LIBPCIACCESS
   /* Allocate driverPrivate */
   pTDFX = TDFXGetRec(pScrn);
   if (pTDFX == NULL) {
@@ -955,7 +955,7 @@ TDFXPreInit(ScrnInfoPtr pScrn, int flags)
 #endif
 #endif
 
-#ifdef PCIACCESS
+#ifdef XSERVER_LIBPCIACCESS
     match = pTDFX->PciInfo[0];
 #else
   match=pTDFX->PciInfo=xf86GetPciInfoForEntity(pTDFX->pEnt->index);
@@ -1150,7 +1150,7 @@ TDFXPreInit(ScrnInfoPtr pScrn, int flags)
       pTDFX->MaxClock = pTDFX->pEnt->device->dacSpeeds[0];
     from = X_CONFIG;
   } else {
-#ifdef PCIACCESS
+#ifdef XSERVER_LIBPCIACCESS
       pTDFX->MaxClock = MaxClocks[pTDFX->match_id];
 #else
     switch (pTDFX->ChipType) {
@@ -1354,7 +1354,7 @@ TDFXMapMem(ScrnInfoPtr pScrn)
 {
     int i;
     TDFXPtr pTDFX = TDFXPTR(pScrn);
-#ifdef PCIACCESS
+#ifdef XSERVER_LIBPCIACCESS
     int err;
 #else
     const int mmioFlags = VIDMEM_MMIO | VIDMEM_READSIDEEFFECT;
@@ -1362,7 +1362,7 @@ TDFXMapMem(ScrnInfoPtr pScrn)
 
   TDFXTRACE("TDFXMapMem start\n");
 
-#ifdef PCIACCESS
+#ifdef XSERVER_LIBPCIACCESS
     /* FIXME: I'm not convinced that this is correct for SLI cards, but I
      * FIXME: don't have any such hardware to test.
      */
@@ -1420,7 +1420,7 @@ TDFXUnmapMem(ScrnInfoPtr pScrn)
   TDFXTRACE("TDFXUnmapMem start\n");
   pTDFX = TDFXPTR(pScrn);
 
-#ifdef PCIACCESS
+#ifdef XSERVER_LIBPCIACCESS
     pci_device_unmap_region(pTDFX->PciInfo[0], 0);
     pci_device_unmap_region(pTDFX->PciInfo[0], 1);
 
@@ -1798,7 +1798,7 @@ TDFXInitWithBIOSData(ScrnInfoPtr pScrn)
   if (!bios)
     return FALSE;
 
-#ifdef PCIACCESS
+#ifdef XSERVER_LIBPCIACCESS
     pci_device_read_rom(pTDFX->PciInfo[0], bios);
 #else
   if (!xf86ReadPciBIOS(0, pTDFX->PciTag[0], 1, bios, T_B_SIZE)) {
