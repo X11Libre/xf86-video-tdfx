@@ -75,8 +75,6 @@ AC_CHECK_DECL(XSERVER_LIBPCIACCESS,
 	      [#include "xorg-server.h"])
 CPPFLAGS="$SAVE_CPPFLAGS"
 
-# Checks for header files.
-AC_HEADER_STDC
 
 if test "$DRI" != no; then
         AC_CHECK_FILE([${sdkdir}/dri.h],
