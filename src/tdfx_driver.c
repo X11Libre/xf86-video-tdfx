@@ -306,7 +306,7 @@ static void
 TDFXFreeRec(ScrnInfoPtr pScrn) {
   if (!pScrn) return;
   if (!pScrn->driverPrivate) return;
-  xfree(pScrn->driverPrivate);
+  free(pScrn->driverPrivate);
   pScrn->driverPrivate=0;
 }
 
@@ -429,7 +429,7 @@ TDFXProbe(DriverPtr drv, int flags)
 				  devSections, numDevSections,
 				  drv, &usedChips);
 
-  xfree(devSections);
+  free(devSections);
   if (numUsed<=0) return FALSE;
 
   if (flags & PROBE_DETECT)
@@ -457,7 +457,7 @@ TDFXProbe(DriverPtr drv, int flags)
 	foundScreen = TRUE;
     }
   }
-  xfree(usedChips);
+  free(usedChips);
 
   return foundScreen;
 }
@@ -927,7 +927,7 @@ TDFXPreInit(ScrnInfoPtr pScrn, int flags)
 
   /* Process the options */
   xf86CollectOptions(pScrn, NULL);
-  if (!(pTDFX->Options = xalloc(sizeof(TDFXOptions))))
+  if (!(pTDFX->Options = malloc(sizeof(TDFXOptions))))
     return FALSE;
   memcpy(pTDFX->Options, TDFXOptions, sizeof(TDFXOptions));
   xf86ProcessOptions(pScrn->scrnIndex, pScrn->options, pTDFX->Options);
@@ -1682,7 +1682,7 @@ TDFXInitWithBIOSData(ScrnInfoPtr pScrn)
   }
 
 #define T_B_SIZE (64 * 1024)
-  bios = xcalloc(T_B_SIZE, 1);
+  bios = calloc(T_B_SIZE, 1);
   if (!bios)
     return FALSE;
 
@@ -1692,7 +1692,7 @@ TDFXInitWithBIOSData(ScrnInfoPtr pScrn)
   if (!xf86ReadPciBIOS(0, pTDFX->PciTag[0], 1, bios, T_B_SIZE)) {
 #if 0
     xf86DrvMsg(pScrn->scrnIndex, X_WARNING, "Bad BIOS read.\n");
-    xfree(bios);
+    free(bios);
     return FALSE;
 #endif
   }
@@ -1700,7 +1700,7 @@ TDFXInitWithBIOSData(ScrnInfoPtr pScrn)
 
   if (bios[0] != 0x55 || bios[1] != 0xAA) {
     xf86DrvMsg(pScrn->scrnIndex, X_WARNING, "Bad BIOS signature.\n");
-    xfree(bios);
+    free(bios);
     return FALSE;
   }
 
@@ -1744,7 +1744,7 @@ TDFXInitWithBIOSData(ScrnInfoPtr pScrn)
   pTDFX->writeLong(pTDFX, MISCINIT0, 0xF3);
   pTDFX->writeLong(pTDFX, MISCINIT0, uint[1]);
 
-  xfree(bios);
+  free(bios);
   return TRUE;
 }
 #endif
@@ -2542,19 +2542,19 @@ TDFXCloseScreen(int scrnIndex, ScreenPtr pScreen)
   
   if (pTDFX->AccelInfoRec) XAADestroyInfoRec(pTDFX->AccelInfoRec);
   pTDFX->AccelInfoRec=0;
-  if (pTDFX->DGAModes) xfree(pTDFX->DGAModes);
+  if (pTDFX->DGAModes) free(pTDFX->DGAModes);
   pTDFX->DGAModes=0;
   if (pTDFX->scanlineColorExpandBuffers[0])
-    xfree(pTDFX->scanlineColorExpandBuffers[0]);
+    free(pTDFX->scanlineColorExpandBuffers[0]);
   pTDFX->scanlineColorExpandBuffers[0]=0;
   if (pTDFX->scanlineColorExpandBuffers[1])
-    xfree(pTDFX->scanlineColorExpandBuffers[1]);
+    free(pTDFX->scanlineColorExpandBuffers[1]);
   pTDFX->scanlineColorExpandBuffers[1]=0;
   if (pTDFX->overlayAdaptor)
-    xfree(pTDFX->overlayAdaptor);
+    free(pTDFX->overlayAdaptor);
   pTDFX->overlayAdaptor=0;
   if (pTDFX->textureAdaptor)
-    xfree(pTDFX->textureAdaptor);
+    free(pTDFX->textureAdaptor);
   pTDFX->textureAdaptor=0;
 
   pScrn->vtSema=FALSE;
