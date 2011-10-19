@@ -191,7 +191,7 @@ typedef struct _TDFXRec {
   unsigned char *FbBase;
   unsigned char *myFbBase;
 #endif
-  IOADDRESS PIOBase[MAXCHIPS];
+  unsigned long PIOBase[MAXCHIPS];
   long FbMapSize;
   int pixelFormat;
   int stride;
