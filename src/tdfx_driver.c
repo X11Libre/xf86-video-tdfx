@@ -6,9 +6,6 @@
 #include <inttypes.h>
 #endif
 
-#define USE_INT10 1
-#define USE_PCIVGAIO 1
-
 /**************************************************************************
 
 Copyright 1998-1999 Precision Insight, Inc., Cedar Park, Texas.
@@ -105,6 +102,9 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #ifdef XF86DRI
 #include "dri.h"
 #endif
+
+#define USE_INT10 1
+#define USE_PCIVGAIO (ABI_VIDEODRV_VERSION < 12)
 
 /* Required Functions: */
 
