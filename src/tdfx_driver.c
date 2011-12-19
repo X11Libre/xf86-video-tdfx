@@ -824,6 +824,7 @@ TDFXPreInit(ScrnInfoPtr pScrn, int flags)
 
   /* Allocate a vgaHWRec */
   if (!vgaHWGetHWRec(pScrn)) return FALSE;
+  vgaHWSetStdFuncs(VGAHWPTR(pScrn));
 
 #if USE_INT10
 #if !defined(__powerpc__)
