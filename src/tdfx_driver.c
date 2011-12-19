@@ -1103,10 +1103,11 @@ TDFXPreInit(ScrnInfoPtr pScrn, int flags)
     return FALSE;
   }
 
-  if (!xf86ReturnOptValBool(pTDFX->Options, OPTION_NOACCEL, FALSE)) {
+  pTDFX->NoAccel = xf86ReturnOptValBool(pTDFX->Options, OPTION_NOACCEL, FALSE);
+  if (!pTDFX->NoAccel) {
     if (!xf86LoadSubModule(pScrn, "xaa")) {
-      TDFXFreeRec(pScrn);
-      return FALSE;
+      xf86DrvMsg(pScrn->scrnIndex, X_WARNING, "No acceleration available\n");
+      pTDFX->NoAccel = TRUE;
     }
   }
 
@@ -2306,7 +2307,6 @@ TDFXScreenInit(int scrnIndex, ScreenPtr pScreen, int argc, char **argv) {
 
   miSetPixmapDepths ();
     
-  pTDFX->NoAccel=xf86ReturnOptValBool(pTDFX->Options, OPTION_NOACCEL, FALSE);
 #ifdef XF86DRI
   /*
    * Setup DRI after visuals have been established, but before fbScreenInit
