@@ -99,7 +99,7 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include "xf86xv.h"
 #include <X11/extensions/Xv.h>
 
-#ifdef XF86DRI
+#ifdef TDFXDRI
 #include "dri.h"
 #endif
 
@@ -1230,7 +1230,7 @@ TDFXPreInit(ScrnInfoPtr pScrn, int flags)
   pTDFX->writeLong(pTDFX, MISCINIT0, pTDFX->ModeReg.miscinit0);
 #endif
 
-#ifdef XF86DRI
+#ifdef TDFXDRI
   /* Load the dri module if requested. */
   if (xf86ReturnOptValBool(pTDFX->Options, OPTION_DRI, FALSE)) {
     xf86LoadSubModule(pScrn, "dri");
@@ -1908,14 +1908,14 @@ TDFXModeInit(ScrnInfoPtr pScrn, DisplayModePtr mode)
     mode->CrtcHSkew=hskew;
   }    
 
-#ifdef XF86DRI
+#ifdef TDFXDRI
   if (pTDFX->directRenderingEnabled) {
     DRILock(screenInfo.screens[pScrn->scrnIndex], 0);
     TDFXSwapContextFifo(screenInfo.screens[pScrn->scrnIndex]);
   }
 #endif
   DoRestore(pScrn, &hwp->ModeReg, &pTDFX->ModeReg, FALSE);
-#ifdef XF86DRI
+#ifdef TDFXDRI
   if (pTDFX->directRenderingEnabled) {
     DRIUnlock(screenInfo.screens[pScrn->scrnIndex]);
   }
@@ -2201,7 +2201,7 @@ TDFXScreenInit(int scrnIndex, ScreenPtr pScreen, int argc, char **argv) {
   TDFXPtr pTDFX;
   VisualPtr visual;
   BoxRec MemBox;
-#ifdef XF86DRI
+#ifdef TDFXDRI
   MessageType driFrom = X_DEFAULT;
 #endif
   int scanlines;
@@ -2308,7 +2308,7 @@ TDFXScreenInit(int scrnIndex, ScreenPtr pScreen, int argc, char **argv) {
 
   miSetPixmapDepths ();
     
-#ifdef XF86DRI
+#ifdef TDFXDRI
   /*
    * Setup DRI after visuals have been established, but before fbScreenInit
    * is called.   fbScreenInit will eventually call into the drivers
@@ -2417,7 +2417,7 @@ TDFXScreenInit(int scrnIndex, ScreenPtr pScreen, int argc, char **argv) {
    * in of TDFXCloseScreen() before the rest is unwrapped
    */
   
-#ifdef XF86DRI
+#ifdef TDFXDRI
   if (pTDFX->directRenderingEnabled) {
 	/* Now that mi, fb, drm and others have done their thing, 
          * complete the DRI setup.
@@ -2471,7 +2471,7 @@ static Bool
 TDFXEnterVT(int scrnIndex, int flags) {
   ScrnInfoPtr pScrn;
   ScreenPtr pScreen;
-#ifdef XF86DRI
+#ifdef TDFXDRI
   TDFXPtr pTDFX;
 #endif
 
@@ -2479,7 +2479,7 @@ TDFXEnterVT(int scrnIndex, int flags) {
   pScrn = xf86Screens[scrnIndex];
   pScreen = screenInfo.screens[scrnIndex];
   TDFXInitFifo(pScreen);
-#ifdef XF86DRI
+#ifdef TDFXDRI
   pTDFX = TDFXPTR(pScrn);
   if (pTDFX->directRenderingEnabled) {
     DRIUnlock(pScreen);
@@ -2506,7 +2506,7 @@ TDFXLeaveVT(int scrnIndex, int flags) {
   pTDFX = TDFXPTR(pScrn);
   pTDFX->sync(pScrn);
   TDFXShutdownFifo(pScreen);
-#ifdef XF86DRI
+#ifdef TDFXDRI
   if (pTDFX->directRenderingEnabled) {
     DRILock(pScreen, 0);
   }
@@ -2525,7 +2525,7 @@ TDFXCloseScreen(int scrnIndex, ScreenPtr pScreen)
   hwp = VGAHWPTR(pScrn);
   pTDFX = TDFXPTR(pScrn);
 
-#ifdef XF86DRI
+#ifdef TDFXDRI
     if (pTDFX->directRenderingEnabled) {
 	TDFXDRICloseScreen(pScreen);
 	pTDFX->directRenderingEnabled=FALSE;

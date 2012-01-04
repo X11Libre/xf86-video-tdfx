@@ -100,8 +100,8 @@ AC_MSG_RESULT([$DRI])
 AM_CONDITIONAL(DRI, test x$DRI = xyes)
 if test "$DRI" = yes; then
         PKG_CHECK_MODULES(DRI, [libdrm >= 2.0 xf86driproto])
-        AC_DEFINE(XF86DRI,1,[Enable DRI driver support])
-        AC_DEFINE(XF86DRI_DEVEL,1,[Enable developmental DRI driver support])
+        AC_DEFINE(TDFXDRI,1,[Enable DRI driver support])
+        AC_DEFINE(TDFXDRI_DEVEL,1,[Enable developmental DRI driver support])
 fi
 
 if test "x$XSERVER_LIBPCIACCESS" = xyes; then

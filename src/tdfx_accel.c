@@ -89,7 +89,7 @@ TDFXFirstSync(ScrnInfoPtr pScrn) {
   TDFXPtr pTDFX = TDFXPTR(pScrn);
 
   if (!pTDFX->syncDone) {
-#ifdef XF86DRI
+#ifdef TDFXDRI
     if (pTDFX->directRenderingEnabled) {
       DRILock(screenInfo.screens[pScrn->scrnIndex], 0);
       TDFXSwapContextFifo(screenInfo.screens[pScrn->scrnIndex]);
@@ -107,7 +107,7 @@ TDFXCheckSync(ScrnInfoPtr pScrn) {
   if (pTDFX->syncDone) {
     pTDFX->sync(pScrn);
     pTDFX->syncDone=FALSE;
-#ifdef XF86DRI
+#ifdef TDFXDRI
     if (pTDFX->directRenderingEnabled) {
       DRIUnlock(screenInfo.screens[pScrn->scrnIndex]);
     }

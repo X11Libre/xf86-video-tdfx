@@ -234,7 +234,7 @@ GetReadPtr(TDFXPtr pTDFX)
   return read_ptr;
 }
 
-#ifdef XF86DRI
+#ifdef TDFXDRI
 void TDFXSwapContextFifo(ScreenPtr pScreen)
 {
   ScrnInfoPtr pScrn;
