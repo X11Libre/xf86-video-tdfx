@@ -38,7 +38,7 @@ DGAFunctionRec TDFX_DGAFuncs = {
 Bool
 TDFXDGAInit(ScreenPtr pScreen)
 {
-  ScrnInfoPtr pScrn = xf86Screens[pScreen->myNum];
+  ScrnInfoPtr pScrn = xf86ScreenToScrn(pScreen);
   TDFXPtr pTDFX;
   DisplayModePtr pMode, firstMode;
   DGAModePtr modes=0, newmodes=0, currentMode;
@@ -111,8 +111,8 @@ TDFX_SetMode(ScrnInfoPtr pScrn, DGAModePtr pMode)
    if (!pMode) { /* restore the original mode */
      /* put the ScreenParameters back */
      if(pTDFX->DGAactive) {
-	TDFXSwitchMode(index, OldModes[index], 0);
-	TDFXAdjustFrame(pScrn->pScreen->myNum, 0, 0, 0);
+	TDFXSwitchMode(SWITCH_MODE_ARGS(pScrn, OldModes[index]));
+	TDFXAdjustFrame(ADJUST_FRAME_ARGS(pScrn, 0, 0));
 	pTDFX->DGAactive = FALSE;
      }
    } else {
@@ -121,7 +121,7 @@ TDFX_SetMode(ScrnInfoPtr pScrn, DGAModePtr pMode)
         pTDFX->DGAactive = TRUE;
      }
 
-     TDFXSwitchMode(index, pMode->mode, 0);
+     TDFXSwitchMode(SWITCH_MODE_ARGS(pScrn, pMode->mode));
    }
    
    return TRUE;
@@ -141,7 +141,7 @@ TDFX_SetViewport(ScrnInfoPtr pScrn, int x, int y, int flags)
    TDFXPtr pTDFX = TDFXPTR(pScrn);
    vgaHWPtr hwp = VGAHWPTR(pScrn);
 
-   TDFXAdjustFrame(pScrn->pScreen->myNum, x, y, flags);
+   TDFXAdjustFrame(ADJUST_FRAME_ARGS(pScrn, x, y));
 
    /* fixme */
    while(hwp->readST01(hwp) & 0x08);

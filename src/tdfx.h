@@ -122,6 +122,7 @@ extern void FillPrivateDRI(TDFXPtr pTDFX, TDFXDRIPtr pTDFXDRI);
 
 #include "xaa.h"
 #include "xf86Cursor.h"
+#include "compat-api.h"
 
 typedef void (*TDFXWriteIndexedByteFunc)(TDFXPtr pTDFX, int addr, 
 					 char index, char value);
@@ -337,8 +338,8 @@ extern void TDFXCursorGrabMemory(ScreenPtr pScreen);
 extern void TDFXSetLFBConfig(TDFXPtr pTDFX);
 extern void TDFXSendNOPFifo(ScrnInfoPtr pScrn);
 
-extern Bool TDFXSwitchMode(int scrnIndex, DisplayModePtr mode, int flags);
-extern void TDFXAdjustFrame(int scrnIndex, int x, int y, int flags);
+extern Bool TDFXSwitchMode(SWITCH_MODE_ARGS_DECL);
+extern void TDFXAdjustFrame(ADJUST_FRAME_ARGS_DECL);
 
 extern void TDFXSetPIOAccess(TDFXPtr pTDFX);
 extern void TDFXSetMMIOAccess(TDFXPtr pTDFX);

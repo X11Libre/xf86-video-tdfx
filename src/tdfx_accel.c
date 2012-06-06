@@ -91,8 +91,8 @@ TDFXFirstSync(ScrnInfoPtr pScrn) {
   if (!pTDFX->syncDone) {
 #ifdef TDFXDRI
     if (pTDFX->directRenderingEnabled) {
-      DRILock(screenInfo.screens[pScrn->scrnIndex], 0);
-      TDFXSwapContextFifo(screenInfo.screens[pScrn->scrnIndex]);
+      DRILock(xf86ScrnToScreen(pScrn), 0);
+      TDFXSwapContextFifo(xf86ScrnToScreen(pScrn));
     }
 #endif
     pTDFX->syncDone=TRUE;
@@ -109,7 +109,7 @@ TDFXCheckSync(ScrnInfoPtr pScrn) {
     pTDFX->syncDone=FALSE;
 #ifdef TDFXDRI
     if (pTDFX->directRenderingEnabled) {
-      DRIUnlock(screenInfo.screens[pScrn->scrnIndex]);
+      DRIUnlock(xf86ScrnToScreen(pScrn));
     }
 #endif
   }
@@ -207,7 +207,7 @@ Bool
 TDFXAccelInit(ScreenPtr pScreen)
 {
   XAAInfoRecPtr infoPtr;
-  ScrnInfoPtr pScrn = xf86Screens[pScreen->myNum];
+  ScrnInfoPtr pScrn = xf86ScreenToScrn(pScreen);
   TDFXPtr pTDFX = TDFXPTR(pScrn);
   CARD32 commonFlags;
 

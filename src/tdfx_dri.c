@@ -39,7 +39,7 @@ static void TDFXDRITransitionTo3d(ScreenPtr pScreen);
 static Bool
 TDFXInitVisualConfigs(ScreenPtr pScreen)
 {
-  ScrnInfoPtr pScrn = xf86Screens[pScreen->myNum];
+  ScrnInfoPtr pScrn = xf86ScreenToScrn(pScreen);
   TDFXPtr pTDFX = TDFXPTR(pScrn);
   int numConfigs = 0;
   __GLXvisualConfig *pConfigs = 0;
@@ -242,15 +242,14 @@ TDFXInitVisualConfigs(ScreenPtr pScreen)
 }
 
 static void
-TDFXDoWakeupHandler(int screenNum, pointer wakeupData, unsigned long result,
-		    pointer pReadmask)
+TDFXDoWakeupHandler(WAKEUPHANDLER_ARGS_DECL)
 {
-  ScreenPtr pScreen = screenInfo.screens[screenNum];
-  ScrnInfoPtr pScrn = xf86Screens[pScreen->myNum];
+  SCREEN_PTR(arg);
+  ScrnInfoPtr pScrn = xf86ScreenToScrn(pScreen);
   TDFXPtr pTDFX = TDFXPTR(pScrn);
 
   pTDFX->pDRIInfo->wrap.WakeupHandler = pTDFX->coreWakeupHandler;
-  (*pTDFX->pDRIInfo->wrap.WakeupHandler) (screenNum, wakeupData, result, pReadmask);
+  (*pTDFX->pDRIInfo->wrap.WakeupHandler) (WAKEUPHANDLER_ARGS);
   pTDFX->pDRIInfo->wrap.WakeupHandler = TDFXDoWakeupHandler;
 
 
@@ -258,24 +257,23 @@ TDFXDoWakeupHandler(int screenNum, pointer wakeupData, unsigned long result,
 }
 
 static void
-TDFXDoBlockHandler(int screenNum, pointer blockData, pointer pTimeout,
-		  pointer pReadmask)
+TDFXDoBlockHandler(BLOCKHANDLER_ARGS_DECL)
 {
-  ScreenPtr pScreen = screenInfo.screens[screenNum];
-  ScrnInfoPtr pScrn = xf86Screens[pScreen->myNum];
+  SCREEN_PTR(arg);
+  ScrnInfoPtr pScrn = xf86ScreenToScrn(pScreen);
   TDFXPtr pTDFX = TDFXPTR(pScrn);
 
   TDFXCheckSync(pScrn);
 
   pTDFX->pDRIInfo->wrap.BlockHandler = pTDFX->coreBlockHandler;
-  (*pTDFX->pDRIInfo->wrap.BlockHandler) (screenNum, blockData, pTimeout, pReadmask);
+  (*pTDFX->pDRIInfo->wrap.BlockHandler) (BLOCKHANDLER_ARGS);
   pTDFX->pDRIInfo->wrap.BlockHandler = TDFXDoBlockHandler;
 
 }
 
 Bool TDFXDRIScreenInit(ScreenPtr pScreen)
 {
-  ScrnInfoPtr pScrn = xf86Screens[pScreen->myNum];
+  ScrnInfoPtr pScrn = xf86ScreenToScrn(pScreen);
   TDFXPtr pTDFX = TDFXPTR(pScrn);
   DRIInfoPtr pDRIInfo;
   TDFXDRIPtr pTDFXDRI;
@@ -475,7 +473,7 @@ Bool TDFXDRIScreenInit(ScreenPtr pScreen)
 void
 TDFXDRICloseScreen(ScreenPtr pScreen)
 {
-  ScrnInfoPtr pScrn = xf86Screens[pScreen->myNum];
+  ScrnInfoPtr pScrn = xf86ScreenToScrn(pScreen);
   TDFXPtr pTDFX = TDFXPTR(pScrn);
 
   DRICloseScreen(pScreen);
@@ -509,7 +507,7 @@ TDFXDestroyContext(ScreenPtr pScreen, drm_context_t hwContext,
 Bool
 TDFXDRIFinishScreenInit(ScreenPtr pScreen)
 {
-  ScrnInfoPtr pScrn = xf86Screens[pScreen->myNum];
+  ScrnInfoPtr pScrn = xf86ScreenToScrn(pScreen);
   TDFXPtr pTDFX = TDFXPTR(pScrn);
   TDFXDRIPtr pTDFXDRI;
 
@@ -548,7 +546,7 @@ static void
 TDFXDRIInitBuffers(WindowPtr pWin, RegionPtr prgn, CARD32 index)
 {
   ScreenPtr pScreen = pWin->drawable.pScreen;
-  ScrnInfoPtr pScrn = xf86Screens[pScreen->myNum];
+  ScrnInfoPtr pScrn = xf86ScreenToScrn(pScreen);
   TDFXPtr pTDFX = TDFXPTR(pScrn);
   BoxPtr pbox;
   int nbox;
@@ -577,7 +575,7 @@ TDFXDRIMoveBuffers(WindowPtr pParent, DDXPointRec ptOldOrg,
 		   RegionPtr prgnSrc, CARD32 index)
 {
   ScreenPtr pScreen = pParent->drawable.pScreen;
-  ScrnInfoPtr pScrn = xf86Screens[pScreen->myNum];
+  ScrnInfoPtr pScrn = xf86ScreenToScrn(pScreen);
   TDFXPtr pTDFX = TDFXPTR(pScrn);
   int dx, dy, xdir, ydir, i, x, y, nbox;
   BoxPtr pbox;
@@ -625,7 +623,7 @@ TDFXDRIOpenFullScreen(ScreenPtr pScreen)
   TDFXPtr pTDFX;
 
   xf86DrvMsg(pScreen->myNum, X_INFO, "OpenFullScreen\n");
-  pScrn = xf86Screens[pScreen->myNum];
+  pScrn = xf86ScreenToScrn(pScreen);
   pTDFX=TDFXPTR(pScrn);
   if (pTDFX->numChips>1) {
     TDFXSetupSLI(pScrn);
@@ -641,7 +639,7 @@ TDFXDRICloseFullScreen(ScreenPtr pScreen)
   ScrnInfoPtr pScrn;
 
   xf86DrvMsg(pScreen->myNum, X_INFO, "CloseFullScreen\n");
-  pScrn = xf86Screens[pScreen->myNum];
+  pScrn = xf86ScreenToScrn(pScreen);
   TDFXDisableSLI(pScrn);
 #endif
   return TRUE;
@@ -650,7 +648,7 @@ TDFXDRICloseFullScreen(ScreenPtr pScreen)
 static void
 TDFXDRITransitionTo2d(ScreenPtr pScreen)
 {
-  ScrnInfoPtr pScrn = xf86Screens[pScreen->myNum];
+  ScrnInfoPtr pScrn = xf86ScreenToScrn(pScreen);
   TDFXPtr pTDFX = TDFXPTR(pScrn);
 
   xf86FreeOffscreenArea(pTDFX->reservedArea); 
@@ -659,7 +657,7 @@ TDFXDRITransitionTo2d(ScreenPtr pScreen)
 static void
 TDFXDRITransitionTo3d(ScreenPtr pScreen)
 {
-  ScrnInfoPtr pScrn = xf86Screens[pScreen->myNum];
+  ScrnInfoPtr pScrn = xf86ScreenToScrn(pScreen);
   TDFXPtr pTDFX = TDFXPTR(pScrn);
   FBAreaPtr pArea;
 
