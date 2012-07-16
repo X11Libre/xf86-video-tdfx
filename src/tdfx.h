@@ -120,7 +120,10 @@ extern void FillPrivateDRI(TDFXPtr pTDFX, TDFXDRIPtr pTDFXDRI);
 #define TDFXTRACEREG if(0) ErrorF
 #endif
 
+#ifdef HAVE_XAA_H
 #include "xaa.h"
+#endif
+#include "xf86fbman.h"
 #include "xf86Cursor.h"
 #include "compat-api.h"
 
@@ -226,7 +229,9 @@ typedef struct _TDFXRec {
   BoxRec prevBlitDest;
   TDFXRegRec SavedReg;
   TDFXRegRec ModeReg;
+#ifdef HAVE_XAA_H
   XAAInfoRecPtr AccelInfoRec;
+#endif
   xf86CursorInfoPtr CursorInfoRec;
   CloseScreenProcPtr CloseScreen;
   Bool usePIO;

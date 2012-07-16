@@ -545,6 +545,7 @@ TDFXDRISwapContext(ScreenPtr pScreen, DRISyncType syncType,
 static void
 TDFXDRIInitBuffers(WindowPtr pWin, RegionPtr prgn, CARD32 index)
 {
+#ifdef HAVE_XAA_H
   ScreenPtr pScreen = pWin->drawable.pScreen;
   ScrnInfoPtr pScrn = xf86ScreenToScrn(pScreen);
   TDFXPtr pTDFX = TDFXPTR(pScrn);
@@ -567,13 +568,16 @@ TDFXDRIInitBuffers(WindowPtr pWin, RegionPtr prgn, CARD32 index)
   }
   TDFXSelectBuffer(pTDFX, TDFX_FRONT);
 
+
   pTDFX->AccelInfoRec->NeedToSync = TRUE;
+#endif
 }
 
 static void
 TDFXDRIMoveBuffers(WindowPtr pParent, DDXPointRec ptOldOrg,
 		   RegionPtr prgnSrc, CARD32 index)
 {
+#ifdef HAVE_XAA_H
   ScreenPtr pScreen = pParent->drawable.pScreen;
   ScrnInfoPtr pScrn = xf86ScreenToScrn(pScreen);
   TDFXPtr pTDFX = TDFXPTR(pScrn);
@@ -609,6 +613,8 @@ TDFXDRIMoveBuffers(WindowPtr pParent, DDXPointRec ptOldOrg,
   TDFXSelectBuffer(pTDFX, TDFX_FRONT);
 
   pTDFX->AccelInfoRec->NeedToSync = TRUE;
+#endif
+
 }
 
 /*

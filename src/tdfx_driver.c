@@ -2537,8 +2537,10 @@ TDFXCloseScreen(CLOSE_SCREEN_ARGS_DECL)
       vgaHWUnmapMem(pScrn);
   }
   
+#ifdef HAVE_XAA_H
   if (pTDFX->AccelInfoRec) XAADestroyInfoRec(pTDFX->AccelInfoRec);
   pTDFX->AccelInfoRec=0;
+#endif
   if (pTDFX->DGAModes) free(pTDFX->DGAModes);
   pTDFX->DGAModes=0;
   if (pTDFX->scanlineColorExpandBuffers[0])

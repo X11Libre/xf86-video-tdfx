@@ -15,14 +15,16 @@
 #include "xf86PciInfo.h"
 
 /* Drivers that use XAA need this */
-#include "xaa.h"
+#ifdef HAVE_XAA_H
 #include "xaalocal.h"
+#endif
 #include "xf86fbman.h"
 
 #include "miline.h"
 
 #include "tdfx.h"
 
+#ifdef HAVE_XAA_H
 #ifdef TDFX_DEBUG_CMDS
 static int cmdCnt=0;
 static int lastAddr=0;
@@ -77,11 +79,14 @@ static void TDFXSubsequentCPUToScreenColorExpandFill(ScrnInfoPtr pScrn,
                                                      int skipleft);
 static void TDFXSubsequentColorExpandScanline(ScrnInfoPtr pScrn, int bufno);
 
+#endif
 void
 TDFXNeedSync(ScrnInfoPtr pScrn) {
   TDFXPtr pTDFX = TDFXPTR(pScrn);
   pTDFX->syncDone=FALSE;
+#ifdef HAVE_XAA_H
   pTDFX->AccelInfoRec->NeedToSync = TRUE;
+#endif
 }
 
 void
@@ -203,9 +208,11 @@ TDFXSetLFBConfig(TDFXPtr pTDFX) {
   }
 }
 
+
 Bool
 TDFXAccelInit(ScreenPtr pScreen)
 {
+#ifdef HAVE_XAA_H
   XAAInfoRecPtr infoPtr;
   ScrnInfoPtr pScrn = xf86ScreenToScrn(pScreen);
   TDFXPtr pTDFX = TDFXPTR(pScrn);
@@ -302,6 +309,9 @@ TDFXAccelInit(ScreenPtr pScreen)
 
   /* Fill in acceleration functions */
   return XAAInit(pScreen, infoPtr);
+#else
+  return FALSE;
+#endif
 }
 
 static void TDFXMakeRoomNoProp(TDFXPtr pTDFX, int size) {
@@ -342,6 +352,9 @@ void TDFXSync(ScrnInfoPtr pScrn)
   } while (i<3);
   pTDFX->PciCnt=stat&0x1F;
 }
+
+#ifdef HAVE_XAA_H
+
 
 static void
 TDFXMatchState(TDFXPtr pTDFX)
@@ -933,3 +946,4 @@ static void TDFXSubsequentColorExpandScanline(ScrnInfoPtr pScrn, int bufno)
   }
 }
 
+#endif
