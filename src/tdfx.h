@@ -226,7 +226,7 @@ typedef struct _TDFXRec {
   unsigned long MMIOAddr[MAXCHIPS];
   EntityInfoPtr pEnt;
   int numChips;
-#ifndef XSERVER_PCIACCESS
+#ifndef XSERVER_LIBPCIACCESS
   PCITAG PciTag[MAXCHIPS];
 #endif
   Bool Primary;
