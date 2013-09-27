@@ -1253,11 +1253,11 @@ TDFXMapMem(ScrnInfoPtr pScrn)
      * FIXME: don't have any such hardware to test.
      */
     for (i = 0; i < pTDFX->numChips; i++) {
-	err = pci_device_map_memory_range(pTDFX->PciInfo[i],
-					  pTDFX->MMIOAddr[i],
-					  TDFXIOMAPSIZE,
-					  TRUE,
-					  & pTDFX->MMIOBase[i]);
+	err = pci_device_map_range(pTDFX->PciInfo[i],
+				   pTDFX->MMIOAddr[i],
+				   TDFXIOMAPSIZE,
+				   PCI_DEV_MAP_FLAG_WRITABLE,
+				   & pTDFX->MMIOBase[i]);
 	if (err) {
 	    xf86DrvMsg(pScrn->scrnIndex, X_ERROR,
 		       "Unable to map MMIO region for card %u (%d).\n",
@@ -1267,11 +1267,11 @@ TDFXMapMem(ScrnInfoPtr pScrn)
     }
     
 
-    err = pci_device_map_memory_range(pTDFX->PciInfo[0],
-				      pTDFX->LinearAddr[0],
-				      pTDFX->FbMapSize,
-				      TRUE,
-				      & pTDFX->FbBase);
+    err = pci_device_map_range(pTDFX->PciInfo[0],
+			       pTDFX->LinearAddr[0],
+			       pTDFX->FbMapSize,
+			       PCI_DEV_MAP_FLAG_WRITABLE,
+			       & pTDFX->FbBase);
     if (err) {
 	xf86DrvMsg(pScrn->scrnIndex, X_ERROR,
 		   "Unable to map framebuffer (%d).\n", err);
@@ -1307,8 +1307,12 @@ TDFXUnmapMem(ScrnInfoPtr pScrn)
   pTDFX = TDFXPTR(pScrn);
 
 #ifdef XSERVER_LIBPCIACCESS
-    pci_device_unmap_region(pTDFX->PciInfo[0], 0);
-    pci_device_unmap_region(pTDFX->PciInfo[0], 1);
+    pci_device_unmap_range(pTDFX->PciInfo[0],
+                           pTDFX->FbBase,
+                           pTDFX->FbMapSize);
+    pci_device_unmap_range(pTDFX->PciInfo[0],
+                           pTDFX->MMIOBase[0],
+                           TDFXIOMAPSIZE);
 
     (void) memset(pTDFX->MMIOBase, 0, sizeof(pTDFX->MMIOBase));
     pTDFX->FbBase = NULL;
