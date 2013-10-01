@@ -2585,14 +2585,11 @@ TDFXValidMode(SCRN_ARG_TYPE arg, DisplayModePtr mode, Bool verbose, int flags) {
     switch (pTDFX->ChipType) {
       case PCI_CHIP_BANSHEE:
         return MODE_BAD;
-        break;
       case PCI_CHIP_VOODOO3:
       case PCI_CHIP_VOODOO5:
         return MODE_OK;
-        break;
       default:
         return MODE_BAD;
-        break;
     }
   }
   /* In clock doubled mode widths must be divisible by 16 instead of 8 */
