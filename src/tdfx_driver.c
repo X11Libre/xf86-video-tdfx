@@ -149,15 +149,15 @@ static void TDFXDisplayPowerManagementSet(ScrnInfoPtr pScrn,
 
 #ifdef XSERVER_LIBPCIACCESS
 #define TDFX_DEVICE_MATCH(d, sub, i) \
-    { 0x121A, (d), PCI_MATCH_ANY, (sub), 0, 0, (i) }
+    { PCI_VENDOR_3DFX, (d), PCI_MATCH_ANY, (sub), 0, 0, (i) }
 
 static const struct pci_id_match tdfx_device_match[] = {
     TDFX_DEVICE_MATCH(PCI_CHIP_BANSHEE, PCI_MATCH_ANY, Banshee),
 
     /* There are *many* missing PCI IDs here.
      */
-    TDFX_DEVICE_MATCH(PCI_CHIP_VOODOO3, 0x0036, Voodoo3_2000),
-    TDFX_DEVICE_MATCH(PCI_CHIP_VOODOO3, 0x003A, Voodoo3_3000),
+    TDFX_DEVICE_MATCH(PCI_CHIP_VOODOO3, PCI_CARD_VOODOO3_2000, Voodoo3_2000),
+    TDFX_DEVICE_MATCH(PCI_CHIP_VOODOO3, PCI_CARD_VOODOO3_3000, Voodoo3_3000),
 
     TDFX_DEVICE_MATCH(PCI_CHIP_VOODOO3, PCI_MATCH_ANY, Voodoo3_Unknown),
     TDFX_DEVICE_MATCH(PCI_CHIP_VOODOO5, PCI_MATCH_ANY, Voodoo5),
