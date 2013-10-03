@@ -154,12 +154,15 @@ static void TDFXDisplayPowerManagementSet(ScrnInfoPtr pScrn,
 static const struct pci_id_match tdfx_device_match[] = {
     TDFX_DEVICE_MATCH(PCI_CHIP_BANSHEE, PCI_MATCH_ANY, Banshee),
 
+    TDFX_DEVICE_MATCH(PCI_CHIP_VELOCITY, PCI_MATCH_ANY, Voodoo3_Unknown),
+
     /* There are *many* missing PCI IDs here.
      */
     TDFX_DEVICE_MATCH(PCI_CHIP_VOODOO3, PCI_CARD_VOODOO3_2000, Voodoo3_2000),
     TDFX_DEVICE_MATCH(PCI_CHIP_VOODOO3, PCI_CARD_VOODOO3_3000, Voodoo3_3000),
 
     TDFX_DEVICE_MATCH(PCI_CHIP_VOODOO3, PCI_MATCH_ANY, Voodoo3_Unknown),
+    TDFX_DEVICE_MATCH(PCI_CHIP_VOODOO4, PCI_MATCH_ANY, Voodoo5),
     TDFX_DEVICE_MATCH(PCI_CHIP_VOODOO5, PCI_MATCH_ANY, Voodoo5),
     { 0, 0, 0 }
 };
@@ -198,7 +201,9 @@ _X_EXPORT DriverRec TDFX = {
 /* Chipsets */
 static SymTabRec TDFXChipsets[] = {
   { PCI_CHIP_BANSHEE, "3dfx Banshee"},
+  { PCI_CHIP_VELOCITY, "3dfx Velocity"},
   { PCI_CHIP_VOODOO3, "3dfx Voodoo3"},
+  { PCI_CHIP_VOODOO4, "3dfx Voodoo4"},
   { PCI_CHIP_VOODOO5, "3dfx Voodoo5"},
   { -1, NULL }
 };
@@ -206,7 +211,9 @@ static SymTabRec TDFXChipsets[] = {
 #ifndef XSERVER_LIBPCIACCESS
 static PciChipsets TDFXPciChipsets[] = {
   { PCI_CHIP_BANSHEE, PCI_CHIP_BANSHEE, RES_SHARED_VGA },
+  { PCI_CHIP_VELOCITY, PCI_CHIP_VELOCITY, RES_SHARED_VGA },
   { PCI_CHIP_VOODOO3, PCI_CHIP_VOODOO3, RES_SHARED_VGA },
+  { PCI_CHIP_VOODOO4, PCI_CHIP_VOODOO4, RES_SHARED_VGA },
   { PCI_CHIP_VOODOO5, PCI_CHIP_VOODOO5, RES_SHARED_VGA },
   { -1, -1, RES_UNDEFINED }
 };
@@ -1050,6 +1057,7 @@ TDFXPreInit(ScrnInfoPtr pScrn, int flags)
     case PCI_CHIP_BANSHEE:
       pTDFX->MaxClock = 270000;
       break;
+    case PCI_CHIP_VELOCITY:
     case PCI_CHIP_VOODOO3:
       switch(match->subsysCard) {
       case PCI_CARD_VOODOO3_2000:
@@ -1063,6 +1071,7 @@ TDFXPreInit(ScrnInfoPtr pScrn, int flags)
 	break;
       }
       break;
+    case PCI_CHIP_VOODOO4:
     case PCI_CHIP_VOODOO5:
       pTDFX->MaxClock = 350000;
       break;
@@ -1078,7 +1087,9 @@ TDFXPreInit(ScrnInfoPtr pScrn, int flags)
     case PCI_CHIP_BANSHEE:
       clockRanges->interlaceAllowed = FALSE;
       break;
+    case PCI_CHIP_VELOCITY:
     case PCI_CHIP_VOODOO3:
+    case PCI_CHIP_VOODOO4:
     case PCI_CHIP_VOODOO5:
       clockRanges->interlaceAllowed = TRUE;
       break;
@@ -2267,7 +2278,7 @@ TDFXScreenInit(SCREEN_INIT_ARGS_DECL) {
   }
 
   scanlines = (pTDFX->backOffset - pTDFX->fbOffset) / pTDFX->stride;
-  if(pTDFX->ChipType < PCI_CHIP_VOODOO5) {
+  if(pTDFX->ChipType < PCI_CHIP_VOODOO4) {
       if (scanlines > 2047) 
 	scanlines = 2047;
   } else {
@@ -2588,7 +2599,9 @@ TDFXValidMode(SCRN_ARG_TYPE arg, DisplayModePtr mode, Bool verbose, int flags) {
     switch (pTDFX->ChipType) {
       case PCI_CHIP_BANSHEE:
         return MODE_BAD;
+      case PCI_CHIP_VELOCITY:
       case PCI_CHIP_VOODOO3:
+      case PCI_CHIP_VOODOO4:
       case PCI_CHIP_VOODOO5:
         return MODE_OK;
       default:
