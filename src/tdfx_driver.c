@@ -1310,9 +1310,12 @@ TDFXUnmapMem(ScrnInfoPtr pScrn)
     pci_device_unmap_range(pTDFX->PciInfo[0],
                            pTDFX->FbBase,
                            pTDFX->FbMapSize);
-    pci_device_unmap_range(pTDFX->PciInfo[0],
-                           pTDFX->MMIOBase[0],
-                           TDFXIOMAPSIZE);
+
+    for (i = 0; i < pTDFX->numChips; i++) {
+        pci_device_unmap_range(pTDFX->PciInfo[i],
+                               pTDFX->MMIOBase[i],
+                               TDFXIOMAPSIZE);
+    }
 
     (void) memset(pTDFX->MMIOBase, 0, sizeof(pTDFX->MMIOBase));
     pTDFX->FbBase = NULL;
