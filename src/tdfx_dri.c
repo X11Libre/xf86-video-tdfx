@@ -361,8 +361,6 @@ Bool TDFXDRIScreenInit(ScreenPtr pScreen)
   pDRIInfo->frameBufferStride = pTDFX->stride;
   pDRIInfo->ddxDrawableTableEntry = TDFX_MAX_DRAWABLES;
 
-  pDRIInfo->wrap.ValidateTree = 0;
-  pDRIInfo->wrap.PostValidateTree = 0;
   pTDFX->coreBlockHandler = pDRIInfo->wrap.BlockHandler;
   pDRIInfo->wrap.BlockHandler = TDFXDoBlockHandler;
   pTDFX->coreWakeupHandler = pDRIInfo->wrap.WakeupHandler;
