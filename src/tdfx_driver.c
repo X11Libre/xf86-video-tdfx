@@ -2325,8 +2325,7 @@ TDFXScreenInit(SCREEN_INIT_ARGS_DECL) {
 #ifdef TDFXDRI
   /*
    * Setup DRI after visuals have been established, but before fbScreenInit
-   * is called.   fbScreenInit will eventually call into the drivers
-   * InitGLXVisuals call back.
+   * is called.
    */
   if (!xf86ReturnOptValBool(pTDFX->Options, OPTION_DRI, TRUE) || pTDFX->NoAccel) {
       pTDFX->directRenderingEnabled = FALSE;
