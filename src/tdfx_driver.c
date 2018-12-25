@@ -753,7 +753,6 @@ Bool TDFXI2cInit(ScrnInfoPtr pScrn)
 static xf86MonPtr doTDFXDDC(ScrnInfoPtr pScrn)
 {
   TDFXPtr pTDFX = TDFXPTR(pScrn);
-  I2CBusPtr pI2CBus;
   xf86MonPtr pMon = NULL;
   CARD32 reg;
 
