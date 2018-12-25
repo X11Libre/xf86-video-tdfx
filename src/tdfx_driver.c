@@ -2214,9 +2214,6 @@ TDFXScreenInit(SCREEN_INIT_ARGS_DECL) {
   TDFXPtr pTDFX;
   VisualPtr visual;
   BoxRec MemBox;
-#ifdef TDFXDRI
-  MessageType driFrom = X_DEFAULT;
-#endif
   int scanlines;
 
   TDFXTRACE("TDFXScreenInit start\n");
@@ -2328,10 +2325,8 @@ TDFXScreenInit(SCREEN_INIT_ARGS_DECL) {
    */
   if (!xf86ReturnOptValBool(pTDFX->Options, OPTION_DRI, TRUE) || pTDFX->NoAccel) {
       pTDFX->directRenderingEnabled = FALSE;
-      driFrom = X_CONFIG;
   } else if (pTDFX->texSize < 0) {
       pTDFX->directRenderingEnabled = FALSE;
-      driFrom = X_PROBED;
   } else {
       pTDFX->directRenderingEnabled = TDFXDRIScreenInit(pScreen);
   }
