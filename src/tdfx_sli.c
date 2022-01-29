@@ -249,7 +249,7 @@ Bool TDFXSetupSLI(ScrnInfoPtr pScrn, Bool sliEnable, int aaSamples)
     else dwFormat = CFG_AA_LFB_RD_FORMAT_32BPP;
     if (pTDFX->numChips==2 && !sliEnable && aaSamples==2)
       dwFormat|=CFG_AA_LFB_RD_DIVIDE_BY_4;
-    /* Thess are wrong, because we don't know where the secondary buffers
+    /* These are wrong, because we don't know where the secondary buffers
        are located */
     pTDFX->writeChipLong(pTDFX, i, CFG_AA_LFB_CTRL, 
 			 (pScrn->videoRam<<10 /* 2nd buf */ << CFG_AA_BASEADDR_SHIFT) |

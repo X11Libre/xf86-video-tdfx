@@ -37,7 +37,7 @@
 #define TDFX_MINOR_VERSION PACKAGE_VERSION_MINOR
 #define TDFX_PATCHLEVEL PACKAGE_VERSION_PATCHLEVEL
 
-/* Macros to aid source compatibilty between pci-rework and "classic" builds.
+/* Macros to aid source compatibility between pci-rework and "classic" builds.
  */
 #ifdef XSERVER_LIBPCIACCESS
 #include <pciaccess.h>

@@ -2419,7 +2419,7 @@ TDFXScreenInit(SCREEN_INIT_ARGS_DECL) {
   pScreen->BlockHandler = TDFXBlockHandler;
 
   /*
-   * DRICloseScreen isn't called thru a wrapper but explicitely
+   * DRICloseScreen isn't called thru a wrapper but explicitly
    * in of TDFXCloseScreen() before the rest is unwrapped
    */
   

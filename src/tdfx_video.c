@@ -528,7 +528,7 @@ TDFXScreenToScreenYUVStretchBlit (ScrnInfoPtr pScrn,
                                   short dst_x2, short dst_y2)
 {
    TDFXPtr pTDFX = TDFXPTR(pScrn);
-   /* reformulate the paramaters the way the hardware wants them */
+   /* reformulate the parameters the way the hardware wants them */
    INT32 src_x = src_x1 & 0x1FFF;
    INT32 src_y = src_y1 & 0x1FFF;
    INT32 dst_x = dst_x1 & 0x1FFF;
