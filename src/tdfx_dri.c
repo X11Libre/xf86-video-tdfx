@@ -139,7 +139,7 @@ Bool TDFXDRIScreenInit(ScreenPtr pScreen)
     pDRIInfo->busIdString = DRICreatePCIBusID(pTDFX->PciInfo);
   } else {
     pDRIInfo->busIdString = malloc(64);
-    sprintf(pDRIInfo->busIdString, "PCI:%d:%d:%d",
+    snprintf(pDRIInfo->busIdString, 64, "PCI:%d:%d:%d",
 	    ((pciConfigPtr)pTDFX->PciInfo->thisCard)->busnum,
 	    ((pciConfigPtr)pTDFX->PciInfo->thisCard)->devnum,
 	    ((pciConfigPtr)pTDFX->PciInfo->thisCard)->funcnum);
