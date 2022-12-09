@@ -2080,7 +2080,7 @@ static void allocateMemory(ScrnInfoPtr pScrn) {
   int memRemaining, fifoSize, screenSizeInTiles, cursorSize;
   int fbSize;
   int verb;
-  char *str;
+  const char *str;
 
   pTDFX = TDFXPTR(pScrn);
 
