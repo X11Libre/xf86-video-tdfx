@@ -695,7 +695,7 @@ TDFXInitChips(ScrnInfoPtr pScrn)
     }
 }
 
-void
+static void
 TDFXPutBits(I2CBusPtr b, int  scl, int  sda)
 {
   TDFXPtr pTDFX= b->DriverPrivate.ptr;
@@ -708,7 +708,7 @@ TDFXPutBits(I2CBusPtr b, int  scl, int  sda)
   pTDFX->writeLong(pTDFX, VIDSERIALPARALLELPORT, reg);
 }
 
-void
+static void
 TDFXGetBits(I2CBusPtr b, int *scl, int *sda)
 {
   TDFXPtr pTDFX = b->DriverPrivate.ptr;
@@ -719,7 +719,7 @@ TDFXGetBits(I2CBusPtr b, int *scl, int *sda)
   *scl = (reg & VSP_SCL0_IN) ? 1 : 0;
 }
 
-Bool TDFXI2cInit(ScrnInfoPtr pScrn)
+static Bool TDFXI2cInit(ScrnInfoPtr pScrn)
 {
   TDFXPtr pTDFX = TDFXPTR(pScrn);
 
