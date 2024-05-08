@@ -299,7 +299,7 @@ static TDFXPtr
 TDFXGetRec(ScrnInfoPtr pScrn)
 {
     if (pScrn->driverPrivate == NULL) {
-	pScrn->driverPrivate = xnfcalloc(sizeof(TDFXRec), 1);
+	pScrn->driverPrivate = XNFcallocarray(sizeof(TDFXRec), 1);
     }
 
     return (TDFXPtr) pScrn->driverPrivate;
@@ -1077,7 +1077,7 @@ TDFXPreInit(ScrnInfoPtr pScrn, int flags)
     }
 #endif
   }
-  clockRanges = xnfcalloc(sizeof(ClockRange), 1);
+  clockRanges = XNFcallocarray(sizeof(ClockRange), 1);
   clockRanges->next=NULL;
   clockRanges->minClock= 12000; /* !!! What's the min clock? !!! */
   clockRanges->maxClock=pTDFX->MaxClock;
