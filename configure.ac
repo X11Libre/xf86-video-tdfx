@@ -63,7 +63,7 @@ XORG_DRIVER_CHECK_EXT(XV, videoproto)
 XORG_DRIVER_CHECK_EXT(DPMSExtension, xextproto)
 
 # Obtain compiler/linker options for the driver dependencies
-PKG_CHECK_MODULES(XORG, [xorg-server >= 1.0.99.901 xproto fontsproto $REQUIRED_MODULES])
+PKG_CHECK_MODULES(XORG, [xorg-server >= 1.18 xproto fontsproto $REQUIRED_MODULES])
 sdkdir=`$PKG_CONFIG --variable=sdkdir xorg-server`
 
 # Checks for libraries.
