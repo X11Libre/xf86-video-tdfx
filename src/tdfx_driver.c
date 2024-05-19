@@ -51,10 +51,6 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 #include "xf86.h"
 #include "xf86_OSproc.h"
-#if GET_ABI_MAJOR(ABI_VIDEODRV_VERSION) < 6
-#include "xf86Resources.h"
-#include "xf86RAC.h"
-#endif
 #include "vbe.h"
 #include "xf86cmap.h"
 
@@ -100,7 +96,6 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #endif
 
 #define USE_INT10 1
-#define USE_PCIVGAIO (GET_ABI_MAJOR(ABI_VIDEODRV_VERSION) < 12)
 
 /* Required Functions: */
 
@@ -1780,9 +1775,6 @@ TDFXInitVGA(ScrnInfoPtr pScrn)
   tdfxReg->vgainit0 = 0;
   tdfxReg->vgainit0 |= SST_VGA0_EXTENSIONS;
   tdfxReg->vgainit0 |= SST_WAKEUP_3C3 << SST_VGA0_WAKEUP_SELECT_SHIFT;
-#if USE_PCIVGAIO
-  tdfxReg->vgainit0 |= SST_VGA0_LEGACY_DECODE;
-#endif
   tdfxReg->vgainit0 |= SST_ENABLE_ALT_READBACK << SST_VGA0_CONFIG_READBACK_SHIFT;
   tdfxReg->vgainit0 |= SST_CLUT_SELECT_8BIT << SST_VGA0_CLUT_SELECT_SHIFT;
 
@@ -2226,9 +2218,6 @@ TDFXScreenInit(SCREEN_INIT_ARGS_DECL) {
 
   if (!pTDFX->usePIO) TDFXSetMMIOAccess(pTDFX);
 
-#if USE_PCIVGAIO
-  hwp->PIOOffset = pTDFX->PIOBase[0] - 0x300;
-#endif
   vgaHWGetIOBase(hwp);
   /* Map VGA memory only for primary cards (to save/restore textmode data). */
   if (pTDFX->Primary) {
