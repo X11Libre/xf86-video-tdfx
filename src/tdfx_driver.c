@@ -1107,10 +1107,8 @@ TDFXPreInit(ScrnInfoPtr pScrn, int flags)
 
   pTDFX->NoAccel = xf86ReturnOptValBool(pTDFX->Options, OPTION_NOACCEL, FALSE);
   if (!pTDFX->NoAccel) {
-    if (!xf86LoadSubModule(pScrn, "xaa")) {
       xf86DrvMsg(pScrn->scrnIndex, X_WARNING, "No acceleration available\n");
       pTDFX->NoAccel = TRUE;
-    }
   }
 
   if (!xf86GetOptValBool(pTDFX->Options, OPTION_SHOWCACHE, &(pTDFX->ShowCache))) {
@@ -2532,10 +2530,6 @@ TDFXCloseScreen(CLOSE_SCREEN_ARGS_DECL)
       vgaHWUnmapMem(pScrn);
   }
   
-#ifdef HAVE_XAA_H
-  if (pTDFX->AccelInfoRec) XAADestroyInfoRec(pTDFX->AccelInfoRec);
-  pTDFX->AccelInfoRec=0;
-#endif
   if (pTDFX->DGAModes) free(pTDFX->DGAModes);
   pTDFX->DGAModes=0;
   if (pTDFX->scanlineColorExpandBuffers[0])

@@ -114,24 +114,6 @@ if test "x$XSERVER_LIBPCIACCESS" = xyes; then
 fi
 AM_CONDITIONAL(XSERVER_LIBPCIACCESS, test "x$XSERVER_LIBPCIACCESS" = xyes)
 
-AC_ARG_ENABLE(xaa,
-              AS_HELP_STRING([--enable-xaa],
-                             [Enable legacy X Acceleration Architecture (XAA) [default=auto]]),
-              [XAA="$enableval"],
-              [XAA=auto])
-if test "x$XAA" != xno; then
-        save_CFLAGS=$CFLAGS
-        save_CPPFLAGS=$CPPFLAGS
-        CFLAGS=$XORG_CFLAGS
-        CPPFLAGS="$XORG_CFLAGS"
-        AC_CHECK_HEADERS([xaa.h], XAA=yes, XAA=no)
-        CFLAGS=$save_CFLAGS
-        CPPFLAGS=$save_CPPFLAGS
-fi
-AC_MSG_CHECKING([whether to include XAA support])
-AM_CONDITIONAL(XAA, test "x$XAA" = xyes)
-AC_MSG_RESULT([$XAA])
-
 # Checks for library functions
 # We don't use strlcat, strlcpy, or timingsafe_memcmp, but check to quiet
 # -Wredundant-decls warning from xorg/os.h which will otherwise redefine them.

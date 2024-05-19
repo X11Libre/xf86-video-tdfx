@@ -327,75 +327,12 @@ TDFXDRISwapContext(ScreenPtr pScreen, DRISyncType syncType,
 static void
 TDFXDRIInitBuffers(WindowPtr pWin, RegionPtr prgn, CARD32 index)
 {
-#ifdef HAVE_XAA_H
-  ScreenPtr pScreen = pWin->drawable.pScreen;
-  ScrnInfoPtr pScrn = xf86ScreenToScrn(pScreen);
-  TDFXPtr pTDFX = TDFXPTR(pScrn);
-  BoxPtr pbox;
-  int nbox;
-
-  /* It looks nicer if these start out black */
-  pbox = REGION_RECTS(prgn);
-  nbox = REGION_NUM_RECTS(prgn);
-
-  TDFXSetupForSolidFill(pScrn, 0, GXcopy, -1);
-  while (nbox--) {
-    TDFXSelectBuffer(pTDFX, TDFX_BACK);
-    TDFXSubsequentSolidFillRect(pScrn, pbox->x1, pbox->y1,
-				pbox->x2-pbox->x1, pbox->y2-pbox->y1);
-    TDFXSelectBuffer(pTDFX, TDFX_DEPTH);
-    TDFXSubsequentSolidFillRect(pScrn, pbox->x1, pbox->y1,
-				pbox->x2-pbox->x1, pbox->y2-pbox->y1);
-    pbox++;
-  }
-  TDFXSelectBuffer(pTDFX, TDFX_FRONT);
-
-
-  pTDFX->AccelInfoRec->NeedToSync = TRUE;
-#endif
 }
 
 static void
 TDFXDRIMoveBuffers(WindowPtr pParent, DDXPointRec ptOldOrg,
 		   RegionPtr prgnSrc, CARD32 index)
 {
-#ifdef HAVE_XAA_H
-  ScreenPtr pScreen = pParent->drawable.pScreen;
-  ScrnInfoPtr pScrn = xf86ScreenToScrn(pScreen);
-  TDFXPtr pTDFX = TDFXPTR(pScrn);
-  int dx, dy, xdir, ydir, i, x, y, nbox;
-  BoxPtr pbox;
-
-  dx = pParent->drawable.x - ptOldOrg.x;
-  dy = pParent->drawable.y - ptOldOrg.y;
-
-  DRIMoveBuffersHelper(pScreen, dx, dy, &xdir, &ydir, prgnSrc);
-
-  pbox = REGION_RECTS(prgnSrc);
-  nbox = REGION_NUM_RECTS(prgnSrc);
-
-  TDFXSetupForScreenToScreenCopy(pScrn, xdir, ydir, GXcopy, ~0, -1);
-
-  TDFXSelectBuffer(pTDFX, TDFX_BACK);
-  for(i = 0; i < nbox; i++) {
-     x = pbox[i].x1;
-     y = pbox[i].y1;
-     TDFXSubsequentScreenToScreenCopy(pScrn, x, y, x+dx, y+dy, 
-                                      pbox[i].x2 - x, pbox[i].y2 - y);
-  }
-
-  TDFXSelectBuffer(pTDFX, TDFX_DEPTH);
-  for(i = 0; i < nbox; i++) {
-     x = pbox[i].x1;
-     y = pbox[i].y1;
-     TDFXSubsequentScreenToScreenCopy(pScrn, x, y, x+dx, y+dy, 
-                                      pbox[i].x2 - x, pbox[i].y2 - y);
-  }
-
-  TDFXSelectBuffer(pTDFX, TDFX_FRONT);
-
-  pTDFX->AccelInfoRec->NeedToSync = TRUE;
-#endif
 
 }
 

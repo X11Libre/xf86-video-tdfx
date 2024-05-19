@@ -15,12 +15,6 @@ static Bool TDFX_OpenFramebuffer(ScrnInfoPtr, char **, unsigned char **,
 static Bool TDFX_SetMode(ScrnInfoPtr, DGAModePtr);
 static int  TDFX_GetViewport(ScrnInfoPtr);
 static void TDFX_SetViewport(ScrnInfoPtr, int, int, int);
-#ifdef HAVE_XAA_H
-static void TDFX_FillRect(ScrnInfoPtr, int, int, int, int, unsigned long);
-static void TDFX_BlitRect(ScrnInfoPtr, int, int, int, int, int, int);
-static void TDFX_BlitTransRect(ScrnInfoPtr, int, int, int, int, int, int, 
-			       unsigned long);
-#endif
 
 
 static
@@ -31,13 +25,7 @@ DGAFunctionRec TDFX_DGAFuncs = {
   TDFX_SetViewport,
   TDFX_GetViewport,
   TDFXSync,
-#ifdef HAVE_XAA_H
-  TDFX_FillRect,
-  TDFX_BlitRect,
-  TDFX_BlitTransRect
-#else
   NULL, NULL, NULL
-#endif
 };
 
 
@@ -66,10 +54,6 @@ TDFXDGAInit(ScreenPtr pScreen)
     num++;
     currentMode->mode = pMode;
     currentMode->flags = DGA_CONCURRENT_ACCESS | DGA_PIXMAP_AVAILABLE;
-#ifdef HAVE_XAA_H
-    if (!pTDFX->NoAccel)
-      currentMode->flags |= DGA_FILL_RECT | DGA_BLIT_RECT;
-#endif
     if (pMode->Flags & V_DBLSCAN)
       currentMode->flags |= DGA_DOUBLESCAN;
     if (pMode->Flags & V_INTERLACE)
@@ -157,49 +141,6 @@ TDFX_SetViewport(ScrnInfoPtr pScrn, int x, int y, int flags)
 
    pTDFX->DGAViewportStatus = 0;  
 }
-
-#ifdef HAVE_XAA_H
-static void 
-TDFX_FillRect(ScrnInfoPtr pScrn, int x, int y, int w, int h, 
-	      unsigned long color)
-{
-  TDFXPtr pTDFX = TDFXPTR(pScrn);
-
-  if (pTDFX->AccelInfoRec) {
-    (*pTDFX->AccelInfoRec->SetupForSolidFill)(pScrn, color, GXcopy, ~0);
-    (*pTDFX->AccelInfoRec->SubsequentSolidFillRect)(pScrn, x, y, w, h);
-  }
-}
-
-static void 
-TDFX_BlitRect(ScrnInfoPtr pScrn, int srcx, int srcy, int w, int h, 
-	      int dstx, int dsty)
-{
-  TDFXPtr pTDFX = TDFXPTR(pScrn);
-
-  if (pTDFX->AccelInfoRec) {
-    int xdir = ((srcx < dstx) && (srcy == dsty)) ? -1 : 1;
-    int ydir = (srcy < dsty) ? -1 : 1;
-
-    (*pTDFX->AccelInfoRec->SetupForScreenToScreenCopy)(pScrn, xdir, ydir, GXcopy, ~0, -1);
-    (*pTDFX->AccelInfoRec->SubsequentScreenToScreenCopy)(pScrn, srcx, srcy, dstx, dsty, w, h);
-  }
-}
-
-
-static void 
-TDFX_BlitTransRect(
-   ScrnInfoPtr pScrn, 
-   int srcx, int srcy, 
-   int w, int h, 
-   int dstx, int dsty,
-   unsigned long color
-){
-  /* this one should be separate since the XAA function would
-     prohibit usage of ~0 as the key */
-}
-#endif
-
 
 static Bool 
 TDFX_OpenFramebuffer(
