@@ -16,7 +16,6 @@ static Bool TDFX_SetMode(ScrnInfoPtr, DGAModePtr);
 static int  TDFX_GetViewport(ScrnInfoPtr);
 static void TDFX_SetViewport(ScrnInfoPtr, int, int, int);
 
-
 static
 DGAFunctionRec TDFX_DGAFuncs = {
   TDFX_OpenFramebuffer,

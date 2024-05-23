@@ -75,12 +75,6 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 #include "fb.h"
 
-/* !!! These need to be checked !!! */
-#if 0
-#define _XF86DGA_SERVER_
-#include <X11/extensions/xf86dgastr.h>
-#endif
-
 /* The driver's own header file: */
 
 #include "tdfx.h"
@@ -558,14 +552,6 @@ TDFXCountRam(ScrnInfoPtr pScrn) {
   return vmemSize*1024;
 }
 
-#if 0
-static int TDFXCfgToSize(int cfg)
-{
-  if (cfg<4) return 0x8000000<<cfg;
-  return 0x4000000>>(cfg-4);
-}
-#endif
-
 static int TDFXSizeToCfg(int size)
 {
   switch (size) {
@@ -616,9 +602,6 @@ TDFXInitChips(ScrnInfoPtr pScrn)
 {
     TDFXPtr pTDFX = TDFXPTR(pScrn);
     int i;
-#if 0
-    int v;
-#endif
     uint32_t cfgbits, initbits;
     uint32_t mem0base, mem1base, mem0size, mem0bits, mem1size, mem1bits;
 
@@ -658,14 +641,6 @@ TDFXInitChips(ScrnInfoPtr pScrn)
 
     for (i = 0; i < pTDFX->numChips; i++) {
 	PCI_WRITE_LONG(initbits | BIT(10), CFG_INIT_ENABLE, i);
-
-#if 0
-	v=pciReadWord(pTDFX->PciTag[i], CFG_PCI_COMMAND);
-	if (!i)
-	    pciWriteWord(pTDFX->PciTag[i], CFG_PCI_COMMAND, v | 0x3);
-	else
-	    pciWriteWord(pTDFX->PciTag[i], CFG_PCI_COMMAND, v | 0x2);
-#endif
 
 	pTDFX->MMIOAddr[i] = mem0base + (i * mem0size);
 
@@ -1344,9 +1319,7 @@ PrintRegisters(ScrnInfoPtr pScrn, TDFXRegPtr regs)
   vgaHWPtr pHW = VGAHWPTR(pScrn);
   vgaRegPtr pVga = &VGAHWPTR(pScrn)->ModeReg;
 
-
   pTDFX = TDFXPTR(pScrn);
-#if 1
   ErrorF("VGA Registers\n");
   ErrorF("MiscOutReg = %x versus %x\n", pHW->readMiscOut(pHW), pVga->MiscOutReg);
   ErrorF("EnableReg = %x\n", pHW->readEnable(pHW));
@@ -1364,8 +1337,7 @@ PrintRegisters(ScrnInfoPtr pScrn, TDFXRegPtr regs)
   for (i=0; i<5; i++) {
     ErrorF("Sequencer[%d]=%d versus %d\n", i, pHW->readSeq(pHW, i), pVga->Sequencer[i]);
   }
-#endif
-#if 1
+
   ErrorF("Banshee Registers\n");
   ErrorF("VidCfg = %x versus %x\n",  pTDFX->readLong(pTDFX, VIDPROCCFG), regs->vidcfg);
   ErrorF("DACmode = %x versus %x\n", pTDFX->readLong(pTDFX, DACMODE), regs->dacmode);
@@ -1383,7 +1355,6 @@ PrintRegisters(ScrnInfoPtr pScrn, TDFXRegPtr regs)
   ErrorF("Input Status 1 = %x\n", pTDFX->readLong(pTDFX, 0xda));
   ErrorF("2D Status = %x\n", pTDFX->readLong(pTDFX, SST_2D_OFFSET));
   ErrorF("3D Status = %x\n", pTDFX->readLong(pTDFX, SST_3D_OFFSET));
-#endif
 #endif
 }
 
@@ -1456,13 +1427,7 @@ TDFXSave(ScrnInfoPtr pScrn)
   pTDFX = TDFXPTR(pScrn);
   /* Make sure VGA functionality is enabled */
   pTDFX->SavedReg.vgainit0=pTDFX->readLong(pTDFX, VGAINIT0);
-#if 0
-  pTDFX->SavedReg.vgainit1=pTDFX->readLong(pTDFX, VGAINIT1);
-#endif
   pTDFX->writeLong(pTDFX, VGAINIT0, pTDFX->ModeReg.vgainit0);
-#if 0
-  pTDFX->writeLong(pTDFX, VGAINIT1, pTDFX->ModeReg.vgainit1);
-#endif
   vgaHWEnable(hwp);
 
   DoSave(pScrn, &hwp->SavedReg, &pTDFX->SavedReg, TRUE);
@@ -1523,10 +1488,6 @@ DoRestore(ScrnInfoPtr pScrn, vgaRegPtr vgaReg, TDFXRegPtr tdfxReg,
     } while (count++<100 && dummy!=tdfxReg->dactable[i]);
   }
   pTDFX->writeLong(pTDFX, VGAINIT0, tdfxReg->vgainit0);
-#if 0
-  pTDFX->writeLong(pTDFX, VGAINIT1, tdfxReg->vgainit1);
-  pTDFX->writeLong(pTDFX, MISCINIT1, tdfxReg->miscinit1);
-#endif
   vgaHWProtect(pScrn, FALSE);
 
   pTDFX->sync(pScrn);
@@ -1622,142 +1583,6 @@ SetupVidPLL(ScrnInfoPtr pScrn, DisplayModePtr mode) {
   return TRUE;
 }
 
-#if 0
-static Bool
-SetupMemPLL(int freq) {
-  TDFXPtr pTDFX;
-  vgaTDFXPtr tdfxReg;
-  int f_out;
-
-  TDFXTRACE("SetupMemPLL start\n");
-  pTDFX=TDFXPTR();
-  tdfxReg=(vgaTDFXPtr)vgaNewVideoState;
-  tdfxReg->mempll=CalcPLL(freq, &f_out);
-  pTDFX->writeLong(pTDFX, PLLCTRL1, tdfxReg->mempll);
-  TDFXTRACEREG("Mem PLL freq=%d f_out=%d reg=%x\n", freq, f_out, 
-     tdfxReg->mempll);
-  return TRUE;
-}
-
-static Bool
-SetupGfxPLL(int freq) {
-  TDFXPtr pTDFX;
-  vgaTDFXPtr tdfxReg;
-  int f_out;
-
-  TDFXTRACE("SetupGfxPLL start\n");
-  pTDFX=TDFXPTR();
-  tdfxReg=(vgaTDFXPtr)vgaNewVideoState;
-  if (pTDFX->chipType==PCI_CHIP_BANSHEE)
-    tdfxReg->gfxpll=CalcPLL(freq, &f_out, 1);
-  else
-    tdfxReg->gfxpll=CalcPLL(freq, &f_out, 0);
-  pTDFX->writeLong(pTDFX, PLLCTRL2, tdfxReg->gfxpll);
-  TDFXTRACEREG("Gfx PLL freq=%d f_out=%d reg=%x\n", freq, f_out, 
-     tdfxReg->gfxpll);
-  return TRUE;
-}
-#endif
-
-#if 0
-static Bool
-TDFXInitWithBIOSData(ScrnInfoPtr pScrn)
-{
-  TDFXPtr pTDFX;
-  unsigned char *bios = NULL;
-  int offset1, offset2;
-  int i;
-  CARD32 uint[9];
-
-  pTDFX=TDFXPTR(pScrn);
-
-  if (pTDFX->initDone)
-    return TRUE;
-
-  if (pTDFX->Primary) {
-    uint[0] = pTDFX->readLong(pTDFX, PCIINIT0);
-    uint[1] = pTDFX->readLong(pTDFX, MISCINIT0);
-    uint[2] = pTDFX->readLong(pTDFX, MISCINIT1);
-    uint[3] = pTDFX->readLong(pTDFX, DRAMINIT0);
-    uint[4] = pTDFX->readLong(pTDFX, DRAMINIT1);
-    uint[5] = pTDFX->readLong(pTDFX, AGPINIT);
-    uint[6] = pTDFX->readLong(pTDFX, PLLCTRL1);
-    uint[7] = pTDFX->readLong(pTDFX, PLLCTRL2);
-    for (i = 0; i < 8; i++) {
-      xf86DrvMsg(pScrn->scrnIndex, X_INFO, "Primary UINT32[%d] is 0x%08lx\n", i, uint[i]);
-    }
-    return TRUE;
-  }
-
-#define T_B_SIZE (64 * 1024)
-  bios = calloc(T_B_SIZE, 1);
-  if (!bios)
-    return FALSE;
-
-#ifdef XSERVER_LIBPCIACCESS
-    pci_device_read_rom(pTDFX->PciInfo[0], bios);
-#else
-  if (!xf86ReadPciBIOS(0, pTDFX->PciTag[0], 1, bios, T_B_SIZE)) {
-#if 0
-    xf86DrvMsg(pScrn->scrnIndex, X_WARNING, "Bad BIOS read.\n");
-    free(bios);
-    return FALSE;
-#endif
-  }
-#endif
-
-  if (bios[0] != 0x55 || bios[1] != 0xAA) {
-    xf86DrvMsg(pScrn->scrnIndex, X_WARNING, "Bad BIOS signature.\n");
-    free(bios);
-    return FALSE;
-  }
-
-  offset1 = bios[0x50] | (bios[0x51] << 8);
-  xf86DrvMsg(pScrn->scrnIndex, X_INFO, "Offset 1 is (0x%04x)\n", offset1);
-  offset2 = bios[offset1] | (bios[offset1 + 1] << 8);
-  xf86DrvMsg(pScrn->scrnIndex, X_INFO, "Offset 2 is (0x%04x)\n", offset2);
-
-  for (i = 0; i < 9; i++) {
-    int o;
-
-    o = offset2 + i * 4;
-    uint[i] = bios[o] | (bios[o+1] << 8) | (bios[o+2] << 16) | (bios[o+3] << 24);
-    xf86DrvMsg(pScrn->scrnIndex, X_INFO, "UINT32[%d] is 0x%08lx\n", i, uint[i]);
-  }
-
-#if 1
-  uint[0] = 0x0584fb04;
-  uint[1] = 0x00000000;
-  uint[2] = 0x03000001;
-  uint[3] = 0x0c17a9e9;
-  uint[4] = 0x00202031;
-  uint[5] = 0x8000049e;
-  uint[6] = 0x00003a05;
-  uint[7] = 0x00000c00;
-#endif
-
-  pTDFX->writeLong(pTDFX, PCIINIT0, uint[0]);
-  pTDFX->writeLong(pTDFX, MISCINIT0, uint[1]);
-  pTDFX->writeLong(pTDFX, MISCINIT1, uint[2]);
-  pTDFX->writeLong(pTDFX, DRAMINIT0, uint[3]);
-  pTDFX->writeLong(pTDFX, DRAMINIT1, uint[4]);
-  pTDFX->writeLong(pTDFX, AGPINIT, uint[5]);
-  pTDFX->writeLong(pTDFX, PLLCTRL1, uint[6]);
-  pTDFX->writeLong(pTDFX, PLLCTRL2, uint[7]);
-#if 0
-  pTDFX->writeLong(pTDFX, DRAMCOMMAND, uint[8]);
-#endif
-
-  /* reset */
-  pTDFX->writeLong(pTDFX, MISCINIT0, 0xF3);
-  pTDFX->writeLong(pTDFX, MISCINIT0, uint[1]);
-
-  free(bios);
-  return TRUE;
-}
-#endif
-
-
 static Bool
 TDFXInitVGA(ScrnInfoPtr pScrn)
 {
@@ -1777,16 +1602,10 @@ TDFXInitVGA(ScrnInfoPtr pScrn)
   tdfxReg->vgainit0 |= SST_CLUT_SELECT_8BIT << SST_VGA0_CLUT_SELECT_SHIFT;
 
   tdfxReg->vgainit0 |= BIT(12);
-#if 0
-  tdfxReg->vgainit1 |= 0;
-  tdfxReg->miscinit1 = 0;
-#endif
 
   tdfxReg->vidcfg = SST_VIDEO_PROCESSOR_EN | SST_CURSOR_X11 | SST_DESKTOP_EN |
     (pTDFX->cpp-1)<<SST_DESKTOP_PIXEL_FORMAT_SHIFT;
 
-  /* tdfxReg->vidcfg |= SST_DESKTOP_CLUT_BYPASS; */
-   
   tdfxReg->stride = pTDFX->stride;
 
   tdfxReg->clip0min = tdfxReg->clip1min = 0;
@@ -2031,20 +1850,7 @@ calcBufferHeightInTiles(int yres)
 
   return heightInTiles;
 
-} /* calcBufferHeightInTiles */
-
-#if 0
-static int
-calcBufferSizeInTiles(int xres, int yres, int cpp) {
-  int bufSizeInTiles;           /* Size of buffer in tiles */
-
-  bufSizeInTiles =
-    calcBufferHeightInTiles(yres) * (calcBufferStride(xres, TRUE, cpp) >> 7);
-
-  return bufSizeInTiles;
-
-} /* calcBufferSizeInTiles */
-#endif
+}
 
 static int
 calcBufferSize(int xres, int yres, Bool tiled, int cpp)
@@ -2241,16 +2047,6 @@ TDFXScreenInit(SCREEN_INIT_ARGS_DECL) {
 
   pScrn->fbOffset = pTDFX->fbOffset;
 
-#if 0
-  if (pTDFX->numChips>1) {
-    if (xf86ReturnOptValBool(pTDFX->Options, OPTION_NO_SLI, FALSE)) {
-      TDFXSetupSLI(pScrn, FALSE, 0);
-    } else {
-      TDFXSetupSLI(pScrn, TRUE, 0);
-    }
-  }
-#endif
-
   TDFXSetLFBConfig(pTDFX);
 
   /* We initialize in the state that our FIFO is up to date */
@@ -2288,9 +2084,6 @@ TDFXScreenInit(SCREEN_INIT_ARGS_DECL) {
 
   pTDFX->maxClip = MemBox.x2 | (MemBox.y2 << 16);
 
-#if 0
-  TDFXInitWithBIOSData(pScrn);
-#endif
   TDFXInitVGA(pScrn);
   TDFXSave(pScrn);
   if (!TDFXModeInit(pScrn, pScrn->currentMode)) return FALSE;
@@ -2529,7 +2322,7 @@ TDFXCloseScreen(CLOSE_SCREEN_ARGS_DECL)
       TDFXUnmapMem(pScrn);
       vgaHWUnmapMem(pScrn);
   }
-  
+
   if (pTDFX->DGAModes) free(pTDFX->DGAModes);
   pTDFX->DGAModes=0;
   if (pTDFX->scanlineColorExpandBuffers[0])

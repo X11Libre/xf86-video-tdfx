@@ -163,14 +163,6 @@ Bool TDFXDRIScreenInit(ScreenPtr pScreen)
   else
     pDRIInfo->maxDrawableTableEntry = TDFX_MAX_DRAWABLES;
 
-#ifdef NOT_DONE
-  /* FIXME need to extend DRI protocol to pass this size back to client
-   * for SAREA mapping that includes a device private record
-   */
-  pDRIInfo->SAREASize =
-    ((sizeof(XF86DRISAREARec) + 0xfff) & 0x1000); /* round to page */
-  /* + shared memory device private rec */
-#else
   /* For now the mapping works by using a fixed size defined
    * in the SAREA header
    */
@@ -179,7 +171,6 @@ Bool TDFXDRIScreenInit(ScreenPtr pScreen)
     return FALSE;
   }
   pDRIInfo->SAREASize = SAREA_MAX;
-#endif
 
   if (!(pTDFXDRI = (TDFXDRIPtr)calloc(sizeof(TDFXDRIRec),1))) {
     xf86DrvMsg(pScreen->myNum, X_ERROR,
@@ -333,7 +324,6 @@ static void
 TDFXDRIMoveBuffers(WindowPtr pParent, DDXPointRec ptOldOrg,
 		   RegionPtr prgnSrc, CARD32 index)
 {
-
 }
 
 /*
@@ -343,30 +333,12 @@ TDFXDRIMoveBuffers(WindowPtr pParent, DDXPointRec ptOldOrg,
 static Bool
 TDFXDRIOpenFullScreen(ScreenPtr pScreen)
 {
-#if 0
-  ScrnInfoPtr pScrn;
-  TDFXPtr pTDFX;
-
-  xf86DrvMsg(pScreen->myNum, X_INFO, "OpenFullScreen\n");
-  pScrn = xf86ScreenToScrn(pScreen);
-  pTDFX=TDFXPTR(pScrn);
-  if (pTDFX->numChips>1) {
-    TDFXSetupSLI(pScrn);
-  }
-#endif
   return TRUE;
 }
 
 static Bool
 TDFXDRICloseFullScreen(ScreenPtr pScreen)
 {
-#if 0
-  ScrnInfoPtr pScrn;
-
-  xf86DrvMsg(pScreen->myNum, X_INFO, "CloseFullScreen\n");
-  pScrn = xf86ScreenToScrn(pScreen);
-  TDFXDisableSLI(pScrn);
-#endif
   return TRUE;
 }
 

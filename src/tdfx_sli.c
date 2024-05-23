@@ -67,15 +67,6 @@ Bool TDFXDisableSLI(TDFXPtr pTDFX)
 				SST_PCI_RETRY_INTERVAL)) |
 			   (0<<SST_PCI_RETRY_INTERVAL_SHIFT));
     }
-
-#if 0
-    if (i>0) {
-      pTDFX->writeChipLong(pTDFX, i, DACMODE, 
-			   SST_DAC_DPMS_ON_VSYNC | SST_DAC_DPMS_ON_HSYNC);
-      v=pTDFX->readChipLong(pTDFX, i, VIDPROCCFG);
-      pTDFX->writeChipLong(pTDFX, i, VIDPROCCFG, v&~SST_VIDEO_PROCESSOR_EN);
-    }
-#endif
   }
   return TRUE;
 }

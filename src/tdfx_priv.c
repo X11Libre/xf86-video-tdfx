@@ -240,18 +240,9 @@ void TDFXSwapContextFifo(ScreenPtr pScreen)
   ScrnInfoPtr pScrn;
   TDFXPtr pTDFX;
   int dummy, readPos;
-#if 0
-  TDFXSAREAPriv *sPriv;
-#endif
 
   pScrn = xf86ScreenToScrn(pScreen);
   pTDFX=TDFXPTR(pScrn);
-#if 0
-  sPriv=(TDFXSAREAPriv*)DRIGetSAREAPrivate(pScreen);
-#endif
-  /* if (sPriv)
-     ErrorF("In FifoPtr=%d FifoRead=%d\n", sPriv->fifoPtr, sPriv->fifoRead); */
-#if 1
   do {
     dummy=TDFXReadLongMMIO(pTDFX, SST_FIFO_DEPTH0);
     readPos=TDFXReadLongMMIO(pTDFX, SST_FIFO_DEPTH0);
@@ -259,20 +250,6 @@ void TDFXSwapContextFifo(ScreenPtr pScreen)
   readPos=(GetReadPtr(pTDFX)-pTDFX->fifoOffset)>>2;
   pTDFX->fifoPtr = pTDFX->fifoBase+readPos;
   pTDFX->fifoRead = pTDFX->fifoPtr;
-#else
-  sPriv=(TDFXSAREAPriv*)DRIGetSAREAPrivate(pScreen);
-  if (!sPriv) return;
-  if ((sPriv->fifoPtr<pTDFX->fifoOffset) || 
-      (sPriv->fifoPtr>(int)pTDFX->fifoOffset+pTDFX->fifoSize) ||
-      (sPriv->fifoRead<pTDFX->fifoOffset) ||
-      (sPriv->fifoRead>(int)pTDFX->fifoOffset+pTDFX->fifoSize)) {
-    ErrorF("Invalid offsets passed between client and X server\n");
-    ResetFifo(pScrn);
-  } else {
-    pTDFX->fifoPtr = (unsigned int *)(pTDFX->FbBase+sPriv->fifoPtr);
-    pTDFX->fifoRead = (unsigned int *)(pTDFX->FbBase+sPriv->fifoRead);
-  }
-#endif
   if (pTDFX->fifoRead>pTDFX->fifoPtr)
     pTDFX->fifoSlots = pTDFX->fifoRead-pTDFX->fifoPtr-1-8;
   else 

@@ -122,8 +122,6 @@ static void
 TDFXSetCursorPosition(ScrnInfoPtr pScrn, int x, int y)
 {
   TDFXPtr pTDFX;
-
-  /* TDFXTRACECURS("TDFXSetCursorPosition start\n"); */
   pTDFX = TDFXPTR(pScrn);
   pTDFX->writeLong(pTDFX, HWCURLOC, ((y+64)<<16)|(x+64));
 }

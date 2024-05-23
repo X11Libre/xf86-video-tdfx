@@ -12,9 +12,7 @@
 #include "xf86Pci.h"
 
 #include "xf86fbman.h"
-
 #include "miline.h"
-
 #include "tdfx.h"
 
 void
@@ -128,11 +126,6 @@ TDFXSetLFBConfig(TDFXPtr pTDFX) {
          (lg2TileAperturePitch < 5) &&
              TileAperturePitch < stride;
          lg2TileAperturePitch += 1, TileAperturePitch <<= 1);
-#if	0
-    fprintf(stderr, "Using %d (== lg2(%d)-10) for tile aperture pitch\n",
-            lg2TileAperturePitch, TileAperturePitch);
-    fprintf(stderr, "stride == %d\n", stride);
-#endif
     for (chip=0; chip<pTDFX->numChips; chip++) {
       TDFXWriteChipLongMMIO(pTDFX, chip, LFBMEMORYCONFIG, (bits&0x1FFF) |
 			    SST_RAW_LFB_ADDR_STRIDE(lg2TileAperturePitch) | 
@@ -187,4 +180,3 @@ void TDFXSync(ScrnInfoPtr pScrn)
   } while (i<3);
   pTDFX->PciCnt=stat&0x1F;
 }
-

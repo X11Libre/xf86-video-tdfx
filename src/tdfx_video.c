@@ -834,49 +834,6 @@ TDFXDisplayVideoOverlay(
     TDFXTRACE("TDFXDisplayVideoOverlay: done, offset=0x%x\n", offset);
 }
 
-
-#if 0
-
-/* * * * *
-
-TDFXSwapVideoOverlayBuffer tries to use the Avenger SWAPBUFFER
-capability to change frames without tearing.
-
-Use this in preference to TDFXDisplayVideoOverlay where all image
-parameters are the same as the previous frame - ie where only the
-SST_3D_LEFTOVERLAYBUF register would have been changed.
-
-NOTE: Work in progress - doesn't seem to sync to VSYNC, and only every
-other frame gets displayed...
-
-Seeing that the buffer swap initiated by DisplayVideoOverlay gets
-synced to VSYNC anyway, just adding double-buffering to PutImageOverlay
-appears to do the job.  Still - I leave this code in in case we can
-get it working later
-
-  -- Steve Davies 2002-10-04
-  -- <steve@daviesfam.org>
-
-* * * * * */
-
-static void
-TDFXSwapVideoOverlayBuffer(
-    ScrnInfoPtr pScrn,
-    int offset,
-    int left
-){
-    TDFXPtr pTDFX = TDFXPTR(pScrn);
-    offset += ((left >> 16) & ~1) << 1;
-    /* Write mew buffer address */
-    pTDFX->writeLong(pTDFX, SST_3D_LEFTOVERLAYBUF, offset & ~3);
-    /* Incremement the swap-pending counter */
-    pTDFX->writeLong(pTDFX, SST_3D_SWAPPENDING, 0);
-    /* write the swapbuffer command - triggered by (next) VSYNC */
-    pTDFX->writeLong(pTDFX, SST_3D_SWAPBUFFERCMD, 1);
-}
-
-#endif
-
 static int
 TDFXPutImageOverlay(
   ScrnInfoPtr pScrn,
@@ -1302,10 +1259,6 @@ TDFXDisplaySurface(
     dstBox.x2 -= pScrn->frameX0;
     dstBox.y1 -= pScrn->frameY0;
     dstBox.y2 -= pScrn->frameY0;
-
-#if 0
-    TDFXResetVideoOverlay(pScrn);
-#endif
 
     TDFXDisplayVideoOverlay(pScrn, surface->id, surface->offsets[0], 
 	     surface->width, surface->height, surface->pitches[0],
