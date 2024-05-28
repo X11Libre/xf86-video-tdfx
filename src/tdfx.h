@@ -345,8 +345,8 @@ extern void TDFXCursorGrabMemory(ScreenPtr pScreen);
 extern void TDFXSetLFBConfig(TDFXPtr pTDFX);
 extern void TDFXSendNOPFifo(ScrnInfoPtr pScrn);
 
-extern Bool TDFXSwitchMode(SWITCH_MODE_ARGS_DECL);
-extern void TDFXAdjustFrame(ADJUST_FRAME_ARGS_DECL);
+extern Bool TDFXSwitchMode(ScrnInfoPtr pScrn, DisplayModePtr mode);
+extern void TDFXAdjustFrame(ScrnInfoPtr pScrn, int x, int y);
 
 extern void TDFXSetPIOAccess(TDFXPtr pTDFX);
 extern void TDFXSetMMIOAccess(TDFXPtr pTDFX);

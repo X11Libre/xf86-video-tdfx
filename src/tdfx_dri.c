@@ -36,7 +36,6 @@ static void TDFXDRITransitionTo3d(ScreenPtr pScreen);
 static void
 TDFXDoWakeupHandler(WAKEUPHANDLER_ARGS_DECL)
 {
-  SCREEN_PTR(arg);
   ScrnInfoPtr pScrn = xf86ScreenToScrn(pScreen);
   TDFXPtr pTDFX = TDFXPTR(pScrn);
 
@@ -51,7 +50,6 @@ TDFXDoWakeupHandler(WAKEUPHANDLER_ARGS_DECL)
 static void
 TDFXDoBlockHandler(BLOCKHANDLER_ARGS_DECL)
 {
-  SCREEN_PTR(arg);
   ScrnInfoPtr pScrn = xf86ScreenToScrn(pScreen);
   TDFXPtr pTDFX = TDFXPTR(pScrn);
 

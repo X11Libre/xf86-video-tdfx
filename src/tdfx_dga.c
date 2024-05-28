@@ -102,8 +102,8 @@ TDFX_SetMode(ScrnInfoPtr pScrn, DGAModePtr pMode)
    if (!pMode) { /* restore the original mode */
      /* put the ScreenParameters back */
      if(pTDFX->DGAactive) {
-	TDFXSwitchMode(SWITCH_MODE_ARGS(pScrn, OldModes[index]));
-	TDFXAdjustFrame(ADJUST_FRAME_ARGS(pScrn, 0, 0));
+	TDFXSwitchMode(pScrn, OldModes[index]);
+	TDFXAdjustFrame(pScrn, 0, 0);
 	pTDFX->DGAactive = FALSE;
      }
    } else {
@@ -112,7 +112,7 @@ TDFX_SetMode(ScrnInfoPtr pScrn, DGAModePtr pMode)
         pTDFX->DGAactive = TRUE;
      }
 
-     TDFXSwitchMode(SWITCH_MODE_ARGS(pScrn, pMode->mode));
+     TDFXSwitchMode(pScrn, pMode->mode);
    }
    
    return TRUE;
@@ -132,7 +132,7 @@ TDFX_SetViewport(ScrnInfoPtr pScrn, int x, int y, int flags)
    TDFXPtr pTDFX = TDFXPTR(pScrn);
    vgaHWPtr hwp = VGAHWPTR(pScrn);
 
-   TDFXAdjustFrame(ADJUST_FRAME_ARGS(pScrn, x, y));
+   TDFXAdjustFrame(pScrn, x, y);
 
    /* fixme */
    while(hwp->readST01(hwp) & 0x08);

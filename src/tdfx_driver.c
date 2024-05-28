@@ -109,25 +109,25 @@ static Bool TDFXProbe(DriverPtr drv, int flags);
 static Bool TDFXPreInit(ScrnInfoPtr pScrn, int flags);
 
 /* Initialize a screen */
-static Bool TDFXScreenInit(SCREEN_INIT_ARGS_DECL);
+static Bool TDFXScreenInit(ScreenPtr pScreen, int argc, char **argv);
 
 /* Enter from a virtual terminal */
-static Bool TDFXEnterVT(VT_FUNC_ARGS_DECL);
+static Bool TDFXEnterVT(ScrnInfoPtr pScrn);
 
 /* Leave to a virtual terminal */
-static void TDFXLeaveVT(VT_FUNC_ARGS_DECL);
+static void TDFXLeaveVT(ScrnInfoPtr pScrn);
 
 /* Close down each screen we initialized */
-static Bool TDFXCloseScreen(CLOSE_SCREEN_ARGS_DECL);
+static Bool TDFXCloseScreen(ScreenPtr pScreen);
 
 /* Change screensaver state */
 static Bool TDFXSaveScreen(ScreenPtr pScreen, int mode);
 
 /* Cleanup server private data */
-static void TDFXFreeScreen(FREE_SCREEN_ARGS_DECL);
+static void TDFXFreeScreen(ScrnInfoPtr pScrn);
 
 /* Check if a mode is valid on the hardware */
-static ModeStatus TDFXValidMode(SCRN_ARG_TYPE arg, DisplayModePtr mode,
+static ModeStatus TDFXValidMode(ScrnInfoPtr pScrn, DisplayModePtr mode,
 				Bool verbose, int flags);
 
 static void TDFXBlockHandler(BLOCKHANDLER_ARGS_DECL);
@@ -729,7 +729,7 @@ static xf86MonPtr doTDFXDDC(ScrnInfoPtr pScrn)
   reg = pTDFX->readLong(pTDFX, VIDSERIALPARALLELPORT);
   pTDFX->writeLong(pTDFX, VIDSERIALPARALLELPORT, reg | VSP_ENABLE_IIC0);
 
-  pMon = xf86DoEDID_DDC2(XF86_SCRN_ARG(pScrn), pTDFX->pI2CBus);
+  pMon = xf86DoEDID_DDC2(pScrn, pTDFX->pI2CBus);
 
   if (pMon == NULL)
     xf86Msg(X_WARNING, "No DDC2 capable monitor found\n");
@@ -2004,7 +2004,7 @@ static void allocateMemory(ScrnInfoPtr pScrn) {
 }
 
 static Bool
-TDFXScreenInit(SCREEN_INIT_ARGS_DECL) {
+TDFXScreenInit(ScreenPtr pScreen, int argc, char **argv) {
   ScrnInfoPtr pScrn;
   vgaHWPtr hwp;
   TDFXPtr pTDFX;
@@ -2184,7 +2184,7 @@ TDFXScreenInit(SCREEN_INIT_ARGS_DECL) {
       return FALSE;
   }
 
-  TDFXAdjustFrame(ADJUST_FRAME_ARGS(pScrn, 0, 0));
+  TDFXAdjustFrame(pScrn, 0, 0);
 
   xf86DPMSInit(pScreen, TDFXDisplayPowerManagementSet, 0);
 
@@ -2224,16 +2224,13 @@ TDFXScreenInit(SCREEN_INIT_ARGS_DECL) {
 }
 
 Bool
-TDFXSwitchMode(SWITCH_MODE_ARGS_DECL) {
-  SCRN_INFO_PTR(arg);
-
+TDFXSwitchMode(ScrnInfoPtr pScrn, DisplayModePtr mode) {
   TDFXTRACE("TDFXSwitchMode start\n");
   return TDFXModeInit(pScrn, mode);
 }
 
 void
-TDFXAdjustFrame(ADJUST_FRAME_ARGS_DECL) {
-  SCRN_INFO_PTR(arg);
+TDFXAdjustFrame(ScrnInfoPtr pScrn, int x, int y) {
   TDFXPtr pTDFX;
   TDFXRegPtr tdfxReg;
 
@@ -2252,8 +2249,7 @@ TDFXAdjustFrame(ADJUST_FRAME_ARGS_DECL) {
 }
 
 static Bool
-TDFXEnterVT(VT_FUNC_ARGS_DECL) {
-  SCRN_INFO_PTR(arg);
+TDFXEnterVT(ScrnInfoPtr pScrn) {
   ScreenPtr pScreen;
 #ifdef TDFXDRI
   TDFXPtr pTDFX;
@@ -2269,13 +2265,12 @@ TDFXEnterVT(VT_FUNC_ARGS_DECL) {
   }
 #endif
   if (!TDFXModeInit(pScrn, pScrn->currentMode)) return FALSE;
-  TDFXAdjustFrame(ADJUST_FRAME_ARGS(pScrn, pScrn->frameX0, pScrn->frameY0));
+  TDFXAdjustFrame(pScrn, pScrn->frameX0, pScrn->frameY0);
   return TRUE;
 }
 
 static void
-TDFXLeaveVT(VT_FUNC_ARGS_DECL) {
-  SCRN_INFO_PTR(arg);
+TDFXLeaveVT(ScrnInfoPtr pScrn) {
   vgaHWPtr hwp;
   ScreenPtr pScreen;
   TDFXPtr pTDFX;
@@ -2296,7 +2291,7 @@ TDFXLeaveVT(VT_FUNC_ARGS_DECL) {
 }
 
 static Bool
-TDFXCloseScreen(CLOSE_SCREEN_ARGS_DECL)
+TDFXCloseScreen(ScreenPtr pScreen)
 {
   ScrnInfoPtr pScrn;
   vgaHWPtr hwp;
@@ -2342,12 +2337,11 @@ TDFXCloseScreen(CLOSE_SCREEN_ARGS_DECL)
 
   pScreen->BlockHandler = pTDFX->BlockHandler;
   pScreen->CloseScreen = pTDFX->CloseScreen;
-  return (*pScreen->CloseScreen)(CLOSE_SCREEN_ARGS);
+  return (*pScreen->CloseScreen)(pScreen);
 }
 
 static void
-TDFXFreeScreen(FREE_SCREEN_ARGS_DECL) {
-  SCRN_INFO_PTR(arg);
+TDFXFreeScreen(ScrnInfoPtr pScrn) {
   TDFXTRACE("TDFXFreeScreen start\n");
   TDFXFreeRec(pScrn);
   if (xf86LoaderCheckSymbol("vgaHWFreeHWRec"))
@@ -2355,8 +2349,7 @@ TDFXFreeScreen(FREE_SCREEN_ARGS_DECL) {
 }
 
 static ModeStatus
-TDFXValidMode(SCRN_ARG_TYPE arg, DisplayModePtr mode, Bool verbose, int flags) {
-  SCRN_INFO_PTR(arg);
+TDFXValidMode(ScrnInfoPtr pScrn, DisplayModePtr mode, Bool verbose, int flags) {
   TDFXPtr pTDFX;
 
   TDFXTRACE("TDFXValidMode start\n");
@@ -2429,7 +2422,6 @@ TDFXSaveScreen(ScreenPtr pScreen, int mode)
 static void
 TDFXBlockHandler(BLOCKHANDLER_ARGS_DECL)
 {
-    SCREEN_PTR(arg);
     ScrnInfoPtr pScrn   = xf86ScreenToScrn(pScreen);
     TDFXPtr     pTDFX   = TDFXPTR(pScrn);
 
