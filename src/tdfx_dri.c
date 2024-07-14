@@ -170,7 +170,7 @@ Bool TDFXDRIScreenInit(ScreenPtr pScreen)
   }
   pDRIInfo->SAREASize = SAREA_MAX;
 
-  if (!(pTDFXDRI = (TDFXDRIPtr)calloc(sizeof(TDFXDRIRec),1))) {
+  if (!(pTDFXDRI = (TDFXDRIPtr)calloc(1, sizeof(TDFXDRIRec)))) {
     xf86DrvMsg(pScreen->myNum, X_ERROR,
                "[dri] DRI memory allocation failed, disabling DRI.\n");
     DRIDestroyInfoRec(pTDFX->pDRIInfo);
