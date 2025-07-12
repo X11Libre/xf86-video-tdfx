@@ -1,6 +1,6 @@
 .\" shorthand for double quote that works everywhere.
 .ds q \N'34'
-.TH TDFX __drivermansuffix__ __vendorversion__
+.TH TDFX 4 2009-01-09 __vendorversion__
 .SH NAME
 tdfx \- 3Dfx video driver
 .SH SYNOPSIS
@@ -12,31 +12,35 @@ tdfx \- 3Dfx video driver
 .B EndSection
 .fi
 .SH DESCRIPTION
-.B tdfx 
-is an __xservername__ driver for 3Dfx video cards.
+.B tdfx
+is an Xorg driver for 3Dfx video cards.
 .SH SUPPORTED HARDWARE
 The
 .B tdfx
-driver supports Voodoo Banshee, Voodoo3, Voodoo4 and Voodoo5 cards.
+driver supports Voodoo Banshee, Voodoo3, Voodoo4, and Voodoo5 cards.
 .SH CONFIGURATION DETAILS
-Please refer to __xconfigfile__(__filemansuffix__) for general configuration
-details.  This section only covers configuration details specific to this
-driver.
+Please refer to
+.BR xorg.conf (5)
+for general configuration details.
+This section only covers configuration details specific to this driver.
 .PP
 The following driver
 .B Options
 are supported:
 .TP
 .BI "Option \*qNoAccel\*q \*q" boolean \*q
-Disable or enable acceleration.  Default: acceleration is enabled.
+Disable or enable acceleration.
+Default: acceleration is enabled.
 .TP
 .BI "Option \*qSWCursor\*q \*q" boolean \*q
-Disable or enable software cursor.  Default: software cursor is disable
+Disable or enable software cursor.
+Default: software cursor is disabled
 and a hardware cursor is used for configurations where the hardware cursor
 is available.
 .TP
 .BI "Option \*qDRI\*q \*q" boolean \*q
-Disable or enable DRI support. By default, DRI is on.
+Disable or enable DRI support.
+By default, DRI is on.
 .TP
 .BI "Option \*qTexturedVideo\*q \*q" boolean \*q
 This has XvImage support use the texture engine rather than the video overlay.
@@ -54,11 +58,15 @@ The following additional
 are supported:
 .TP
 .BI "Option \*qShowCache\*q \*q" boolean \*q
-Enable or disable viewing offscreen cache memory.  A development debug option.
+Enable or disable viewing offscreen cache memory.
+A development debug option.
 Default: off.
 .SH FILES
-tdfx_drv.o
+tdfx_drv.so
 .SH "SEE ALSO"
-__xservername__(__appmansuffix__), __xconfigfile__(__filemansuffix__), Xserver(__appmansuffix__), X(__miscmansuffix__)
+.BR Xorg (1),
+.BR Xserver (1),
+.BR xorg.conf (5),
+.BR X (7)
 .SH AUTHORS
 Authors include: ...
