@@ -15,7 +15,7 @@
   Memory layout of card is as follows:
 
   000000-00ffff: VGA memory
-  010000-013fff: Cursor 
+  010000-013fff: Cursor
   011000-xxxxxx: Fifo (Min of CMDFIFO pages)
   xxxxxx- A-1  : Front Buffer (framebuffer)
    A    - B-1  : Pixmap Cache (framebuffer)
@@ -33,7 +33,7 @@
 void TDFXWriteFifo_24(TDFXPtr pTDFX, int val) {
   *pTDFX->fifoPtr++ = val;
 }
- 
+
 void TDFXWriteFifo_16(TDFXPtr pTDFX, int val) {
   *pTDFX->fifoPtr++ = BE_WSWAP32(val);
 }
@@ -66,7 +66,7 @@ void TDFXSendNOPFifo2D(ScrnInfoPtr pScrn)
   TDFXAllocateSlots(pTDFX, 2);
   SET_PKT2_HEADER(SSTCP_COMMAND);
   WRITE_FIFO(pTDFX, SST_2D_COMMAND, SST_2D_NOP|SST_2D_GO);
-}  
+}
 
 void TDFXSendNOPFifo(ScrnInfoPtr pScrn)
 {
@@ -88,11 +88,11 @@ static void InstallFifo(ScrnInfoPtr pScrn)
   TDFXWriteLongMMIO(pTDFX, SST_FIFO_AMAX0, pTDFX->fifoOffset-4);
   TDFXWriteLongMMIO(pTDFX, SST_FIFO_DEPTH0, 0);
   TDFXWriteLongMMIO(pTDFX, SST_FIFO_HOLECNT0, 0);
-  if (pTDFX->ChipType == PCI_CHIP_BANSHEE) 
+  if (pTDFX->ChipType == PCI_CHIP_BANSHEE)
     TDFXWriteLongMMIO(pTDFX, SST_FIFO_FIFOTHRESH, (0x9<<5) | 0x2);
-  else 
+  else
     TDFXWriteLongMMIO(pTDFX, SST_FIFO_FIFOTHRESH, (0xf<<5) | 0x8);
-  TDFXWriteLongMMIO(pTDFX, SST_FIFO_BASESIZE0, ((pTDFX->fifoSize>>12)-1) | 
+  TDFXWriteLongMMIO(pTDFX, SST_FIFO_BASESIZE0, ((pTDFX->fifoSize>>12)-1) |
 		    SST_EN_CMDFIFO);
   /* Set the internal state */
   pTDFX->fifoRead = pTDFX->fifoBase;
@@ -132,7 +132,7 @@ static void TDFXResetFifo(ScrnInfoPtr pScrn)
 
 /*
   There are two steps to fully syncing the board:
-  
+
   1) Send a NOP, which waits for any commands in progress
   2) Read the status register for 3 consecutive non-busy
 
@@ -222,7 +222,7 @@ void TDFXShutdownFifo(ScreenPtr pScreen)
 #endif
 }
 
-static uint32 
+static uint32
 GetReadPtr(TDFXPtr pTDFX)
 {
   uint32 read_ptr, dummy;
@@ -252,13 +252,13 @@ void TDFXSwapContextFifo(ScreenPtr pScreen)
   pTDFX->fifoRead = pTDFX->fifoPtr;
   if (pTDFX->fifoRead>pTDFX->fifoPtr)
     pTDFX->fifoSlots = pTDFX->fifoRead-pTDFX->fifoPtr-1-8;
-  else 
+  else
     pTDFX->fifoSlots = pTDFX->fifoEnd-pTDFX->fifoPtr-8;
-}    
+}
 
 #endif
 
-static void 
+static void
 TDFXMakeSpace(TDFXPtr pTDFX, uint32 slots)
 {
   uint32 slots_available;
@@ -281,7 +281,7 @@ TDFXMakeSpace(TDFXPtr pTDFX, uint32 slots)
     do {
       pTDFX->fifoRead = (uint32*)(pTDFX->FbBase + GetReadPtr(pTDFX));
     }
-    while (pTDFX->fifoRead>pTDFX->fifoPtr || 
+    while (pTDFX->fifoRead>pTDFX->fifoPtr ||
 	   pTDFX->fifoRead == pTDFX->fifoBase);
     /*
     ** Put a jump command in command fifo to wrap to the beginning.
@@ -329,7 +329,7 @@ TDFXMakeSpace(TDFXPtr pTDFX, uint32 slots)
   pTDFX->fifoSlots = slots_available-slots;
 }
 
-void 
+void
 TDFXAllocateSlots(TDFXPtr pTDFX, int slots)
 {
 #ifdef TDFX_DEBUG_FIFO

@@ -346,7 +346,7 @@ TDFXDRITransitionTo2d(ScreenPtr pScreen)
   ScrnInfoPtr pScrn = xf86ScreenToScrn(pScreen);
   TDFXPtr pTDFX = TDFXPTR(pScrn);
 
-  xf86FreeOffscreenArea(pTDFX->reservedArea); 
+  xf86FreeOffscreenArea(pTDFX->reservedArea);
 }
 
 static void
@@ -372,7 +372,7 @@ TDFXDRITransitionTo3d(ScreenPtr pScreen)
   }
 
   xf86PurgeUnlockedOffscreenAreas(pScreen);
-  
+
   pArea = xf86AllocateOffscreenArea(pScreen, pScrn->displayWidth,
 				    pTDFX->pixmapCacheLinesMin,
 				    pScrn->displayWidth, NULL, NULL, NULL);

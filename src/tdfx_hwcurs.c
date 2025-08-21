@@ -39,7 +39,7 @@ TDFXCursorInit(ScreenPtr pScreen)
   infoPtr->MaxWidth = 64;
   infoPtr->MaxHeight = 64;
 
-  infoPtr->Flags = 
+  infoPtr->Flags =
 #if X_BYTE_ORDER == X_LITTLE_ENDIAN
 HARDWARE_CURSOR_BIT_ORDER_MSBFIRST |
 #endif
@@ -74,7 +74,7 @@ static unsigned int TDFXSwap(TDFXPtr pTDFX, unsigned int val) {
 }
 #endif
 
-static void 
+static void
 TDFXLoadCursorImage(ScrnInfoPtr pScrn, unsigned char *src)
 {
   TDFXPtr pTDFX;
@@ -138,7 +138,7 @@ TDFXSetCursorColors(ScrnInfoPtr pScrn, int bg, int fg)
 }
 
 static Bool
-TDFXUseHWCursor(ScreenPtr pScreen, CursorPtr pCurs) 
+TDFXUseHWCursor(ScreenPtr pScreen, CursorPtr pCurs)
 {
   ScrnInfoPtr pScrn;
   TDFXPtr pTDFX;

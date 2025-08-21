@@ -135,17 +135,17 @@ extern void FillPrivateDRI(TDFXPtr pTDFX, TDFXDRIPtr pTDFXDRI);
 #include "xf86Cursor.h"
 #include "compat-api.h"
 
-typedef void (*TDFXWriteIndexedByteFunc)(TDFXPtr pTDFX, int addr, 
+typedef void (*TDFXWriteIndexedByteFunc)(TDFXPtr pTDFX, int addr,
 					 char index, char value);
-typedef char (*TDFXReadIndexedByteFunc)(TDFXPtr pTDFX, int addr, 
+typedef char (*TDFXReadIndexedByteFunc)(TDFXPtr pTDFX, int addr,
 					char index);
 typedef void (*TDFXWriteWordFunc)(TDFXPtr pTDFX, int addr, int value);
 typedef int (*TDFXReadWordFunc)(TDFXPtr pTDFX, int addr);
-typedef void (*TDFXWriteChipIndexedByteFunc)(TDFXPtr pTDFX, int chip, 
+typedef void (*TDFXWriteChipIndexedByteFunc)(TDFXPtr pTDFX, int chip,
 					     int addr, char index, char value);
-typedef char (*TDFXReadChipIndexedByteFunc)(TDFXPtr pTDFX, int chip, 
+typedef char (*TDFXReadChipIndexedByteFunc)(TDFXPtr pTDFX, int chip,
 					    int addr, char index);
-typedef void (*TDFXWriteChipWordFunc)(TDFXPtr pTDFX, int chip, 
+typedef void (*TDFXWriteChipWordFunc)(TDFXPtr pTDFX, int chip,
 				      int addr, int value);
 typedef int (*TDFXReadChipWordFunc)(TDFXPtr pTDFX, int chip,
 				    int addr);
@@ -275,8 +275,8 @@ typedef struct _TDFXRec {
   FBAreaPtr offscreenYUVBuf;
   int offscreenYUVBufWidth;
   int offscreenYUVBufHeight;
-  
-  /* This is a small register shadow.  I'm only shadowing 
+
+  /* This is a small register shadow.  I'm only shadowing
    *   sst2dDstFmt
    *   sst2dSrcFmt
    * If a real register shadow is ever needed we should probably
@@ -358,16 +358,16 @@ extern void TDFXNeedSync(ScrnInfoPtr pScrn);
 extern void TDFXCheckSync(ScrnInfoPtr pScrn);
 extern void TDFXFirstSync(ScrnInfoPtr pScrn);
 
-extern void TDFXSetupForScreenToScreenCopy(ScrnInfoPtr pScrn, int xdir, 
+extern void TDFXSetupForScreenToScreenCopy(ScrnInfoPtr pScrn, int xdir,
 					   int ydir, int rop,
-					   unsigned int planemask, 
+					   unsigned int planemask,
 					   int trans_color);
-extern void TDFXSubsequentScreenToScreenCopy(ScrnInfoPtr pScrn, int srcX, 
-					     int srcY, int dstX, int dstY, 
+extern void TDFXSubsequentScreenToScreenCopy(ScrnInfoPtr pScrn, int srcX,
+					     int srcY, int dstX, int dstY,
 					     int w, int h);
-extern void TDFXSetupForSolidFill(ScrnInfoPtr pScrn, int color, int rop, 
+extern void TDFXSetupForSolidFill(ScrnInfoPtr pScrn, int color, int rop,
 				  unsigned int planemask);
-extern void TDFXSubsequentSolidFillRect(ScrnInfoPtr pScrn, int x, int y, 
+extern void TDFXSubsequentSolidFillRect(ScrnInfoPtr pScrn, int x, int y,
 					int w, int h);
 
 extern void TDFXSelectBuffer(TDFXPtr pTDFX, int which);

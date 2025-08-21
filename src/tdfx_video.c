@@ -81,7 +81,7 @@ static XF86VideoEncodingRec TextureEncoding[] =
    { 0, "XV_IMAGE", 1024, 1024, {1, 1} }
 };
 
-static XF86VideoFormatRec OverlayFormats[] = 
+static XF86VideoFormatRec OverlayFormats[] =
 {
    {8, TrueColor}, {8, DirectColor}, {8, PseudoColor},
    {8, GrayScale}, {8, StaticGray}, {8, StaticColor},
@@ -89,7 +89,7 @@ static XF86VideoFormatRec OverlayFormats[] =
    {15, DirectColor}, {16, DirectColor}, {24, DirectColor}
 };
 
-static XF86VideoFormatRec TextureFormats[] = 
+static XF86VideoFormatRec TextureFormats[] =
 {
    {15, TrueColor}, {16, TrueColor}, {24, TrueColor}
 };
@@ -131,7 +131,7 @@ void TDFXInitVideo(ScreenPtr pScreen)
     /* The hardware can't convert YUV->8 bit color */
     if(pTDFX->cpp == 1)
       return;
-    
+
     if (!pTDFX->TextureXvideo) {
 	/* Offscreen support for Overlay only */
     	TDFXInitOffscreenImages(pScreen);
@@ -150,10 +150,10 @@ void TDFXInitVideo(ScreenPtr pScreen)
 	    num_adaptors = 1;
 	    adaptors = &newAdaptor;
 	} else {
-            newAdaptors = 
+            newAdaptors =
 		malloc((num_adaptors + 1) * sizeof(XF86VideoAdaptorPtr*));
             if(newAdaptors) {
-                memcpy(newAdaptors, adaptors, num_adaptors * 
+                memcpy(newAdaptors, adaptors, num_adaptors *
 						sizeof(XF86VideoAdaptorPtr));
                 newAdaptors[num_adaptors] = newAdaptor;
                 adaptors = newAdaptors;
@@ -200,7 +200,7 @@ TDFXAllocAdaptor(ScrnInfoPtr pScrn, int numberPorts)
     pPriv->colorKey = pTDFX->videoKey;
     pPriv->videoStatus = 0;
     pPriv->filterQuality = 1;
-  
+
     return adapt;
 }
 
@@ -383,22 +383,22 @@ TDFXGetPortAttributeOverlay(
 }
 
 
-static int 
+static int
 TDFXSetPortAttributeTexture(
-  ScrnInfoPtr pScrn, 
+  ScrnInfoPtr pScrn,
   Atom attribute,
-  INT32 value, 
+  INT32 value,
   pointer data
 ) {
   return Success;
 }
 
 
-static int 
+static int
 TDFXGetPortAttributeTexture(
-  ScrnInfoPtr pScrn, 
+  ScrnInfoPtr pScrn,
   Atom attribute,
-  INT32 *value, 
+  INT32 *value,
   pointer data
 ){
   return Success;
@@ -416,7 +416,7 @@ TDFXQueryBestSize(
 ){
    if(vid_w > drw_w) drw_w = vid_w;
    if(vid_h > drw_h) drw_h = vid_h;
-   
+
   *p_w = drw_w;
   *p_h = drw_h;
 }
@@ -597,28 +597,28 @@ YUVPlanarToPacked (ScrnInfoPtr pScrn,
    TDFXCopyData(psrc, pdst, width >> 1, 1024, src_h >> 1, src_w >> 1);
 
    /* IDLE until the copy finished, timeout for safety */
-   for (count = 0; count < 1000; count++) 
+   for (count = 0; count < 1000; count++)
      if (!((TDFXReadLongMMIO(pTDFX, STATUS) & SST_BUSY)))
        break;
 
    /* Restore trashed registers */
    TDFXWriteLongMMIO(pTDFX, YUVBASEADDR, yuvBaseAddr);
-   TDFXWriteLongMMIO(pTDFX, YUVSTRIDE, yuvStride);  
+   TDFXWriteLongMMIO(pTDFX, YUVSTRIDE, yuvStride);
 
    /* Wait for it to happen */
    TDFXSendNOPFifo2D(pScrn);
 }
 
 
-static int 
-TDFXPutImageTexture( 
-             ScrnInfoPtr pScrn, 
-             short src_x, short src_y, 
+static int
+TDFXPutImageTexture(
+             ScrnInfoPtr pScrn,
+             short src_x, short src_y,
              short drw_x, short drw_y,
-             short src_w, short src_h, 
+             short src_w, short src_h,
              short drw_w, short drw_h,
-             int id, unsigned char* buf, 
-             short width, short height, 
+             int id, unsigned char* buf,
+             short width, short height,
              Bool sync,
              RegionPtr clipBoxes, pointer data,
              DrawablePtr pDraw
@@ -661,9 +661,9 @@ TDFXPutImageTexture(
         pbox = REGION_RECTS(clipBoxes); nbox > 0; nbox--, pbox++)
    {
      TDFXScreenToScreenYUVStretchBlit (pScrn,
-        SRC_X1 + SCALEX(pbox->x1 - drw_x), 
+        SRC_X1 + SCALEX(pbox->x1 - drw_x),
         SRC_Y1 + SCALEY(pbox->y1 - drw_y),
-        SRC_X1 + SCALEX(pbox->x2 - drw_x), 
+        SRC_X1 + SCALEX(pbox->x2 - drw_x),
         SRC_Y1 + SCALEY(pbox->y2 - drw_y),
         pbox->x1, pbox->y1,
         pbox->x2, pbox->y2);
@@ -752,7 +752,7 @@ Then we or in 0x320:
       11
       109876543210
 320 = 001100100000
-    
+
 bit 11=0: Do not bypass clut (colour lookup) for overlay
 bit 10=0: Do not bypass clut for desktop
 bit  9=1: use video-in buffer address as overlay start
@@ -801,7 +801,7 @@ TDFXDisplayVideoOverlay(
 
     dudx = (src_w << 20) / drw_w;
     /* subtract 1 to eliminate garbage on last line */
-    dvdy = (( src_h - 1 )<< 20) / drw_h; 
+    dvdy = (( src_h - 1 )<< 20) / drw_h;
 
     offset += ((left >> 16) & ~1) << 1;
     left = (left & 0x0001ffff) << 3;
@@ -1115,11 +1115,11 @@ typedef struct {
   Bool isOn;
 } OffscreenPrivRec, * OffscreenPrivPtr;
 
-static int 
+static int
 TDFXAllocateSurface(
     ScrnInfoPtr pScrn,
     int id,
-    unsigned short w, 	
+    unsigned short w,
     unsigned short h,
     XF86SurfacePtr surface
 ){
@@ -1162,7 +1162,7 @@ TDFXAllocateSurface(
     pPriv->isOn = FALSE;
 
     surface->pScrn = pScrn;
-    surface->id = id;   
+    surface->id = id;
     surface->pitches[0] = pitch;
     surface->offsets[0] = pTDFX->fbOffset + (linear->offset * bpp);
     surface->devPrivate.ptr = (pointer)pPriv;
@@ -1170,7 +1170,7 @@ TDFXAllocateSurface(
     return Success;
 }
 
-static int 
+static int
 TDFXStopSurface(
     XF86SurfacePtr surface
 ){
@@ -1187,7 +1187,7 @@ TDFXStopSurface(
 }
 
 
-static int 
+static int
 TDFXFreeSurface(
     XF86SurfacePtr surface
 ){
@@ -1209,7 +1209,7 @@ TDFXGetSurfaceAttribute(
     Atom attribute,
     INT32 *value
 ){
-    return TDFXGetPortAttributeOverlay(pScrn, attribute, value, 
+    return TDFXGetPortAttributeOverlay(pScrn, attribute, value,
 			(pointer)(GET_PORT_PRIVATE(pScrn)));
 }
 
@@ -1219,16 +1219,16 @@ TDFXSetSurfaceAttribute(
     Atom attribute,
     INT32 value
 ){
-    return TDFXSetPortAttributeOverlay(pScrn, attribute, value, 
+    return TDFXSetPortAttributeOverlay(pScrn, attribute, value,
 			(pointer)(GET_PORT_PRIVATE(pScrn)));
 }
 
-static int 
+static int
 TDFXDisplaySurface(
     XF86SurfacePtr surface,
-    short src_x, short src_y, 
+    short src_x, short src_y,
     short drw_x, short drw_y,
-    short src_w, short src_h, 
+    short src_w, short src_h,
     short drw_w, short drw_h,
     RegionPtr clipBoxes
 ){
@@ -1249,7 +1249,7 @@ TDFXDisplaySurface(
     dstBox.y1 = drw_y;
     dstBox.y2 = drw_y + drw_h;
 
-    if(!xf86XVClipVideoHelper(&dstBox, &x1, &x2, &y1, &y2, clipBoxes, 
+    if(!xf86XVClipVideoHelper(&dstBox, &x1, &x2, &y1, &y2, clipBoxes,
 			      surface->width, surface->height))
     {
 	return Success;
@@ -1260,7 +1260,7 @@ TDFXDisplaySurface(
     dstBox.y1 -= pScrn->frameY0;
     dstBox.y2 -= pScrn->frameY0;
 
-    TDFXDisplayVideoOverlay(pScrn, surface->id, surface->offsets[0], 
+    TDFXDisplayVideoOverlay(pScrn, surface->id, surface->offsets[0],
 	     surface->width, surface->height, surface->pitches[0],
 	     x1, y1, x2, &dstBox, src_w, src_h, drw_w, drw_h);
 
@@ -1269,7 +1269,7 @@ TDFXDisplaySurface(
     pPriv->isOn = TRUE;
     /* we've prempted the XvImage stream so set its free timer */
     if(portPriv->videoStatus & CLIENT_VIDEO_ON) {
-	REGION_EMPTY(pScrn->pScreen, &portPriv->clip);   
+	REGION_EMPTY(pScrn->pScreen, &portPriv->clip);
 	UpdateCurrentTime();
 	portPriv->videoStatus = FREE_TIMER;
 	portPriv->freeTime = currentTime.milliseconds + FREE_DELAY;
@@ -1279,7 +1279,7 @@ TDFXDisplaySurface(
     return Success;
 }
 
-static void 
+static void
 TDFXInitOffscreenImages(ScreenPtr pScreen)
 {
     XF86OffscreenImagePtr offscreenImages;
@@ -1289,7 +1289,7 @@ TDFXInitOffscreenImages(ScreenPtr pScreen)
 	return;
 
     offscreenImages[0].image = &OverlayImages[0];
-    offscreenImages[0].flags = VIDEO_OVERLAID_IMAGES | 
+    offscreenImages[0].flags = VIDEO_OVERLAID_IMAGES |
 			       VIDEO_CLIP_TO_VIEWPORT;
     offscreenImages[0].alloc_surface = TDFXAllocateSurface;
     offscreenImages[0].free_surface = TDFXFreeSurface;
@@ -1301,6 +1301,6 @@ TDFXInitOffscreenImages(ScreenPtr pScreen)
     offscreenImages[0].max_height = 2048;
     offscreenImages[0].num_attributes = 2;
     offscreenImages[0].attributes = OverlayAttributes;
-    
+
     xf86XVRegisterOffscreenImages(pScreen, offscreenImages, 1);
 }
