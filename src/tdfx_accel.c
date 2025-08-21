@@ -102,7 +102,7 @@ void
 TDFXSetLFBConfig(TDFXPtr pTDFX) {
   if (pTDFX->ChipType<=PCI_CHIP_VOODOO3) {
 #if X_BYTE_ORDER == X_BIG_ENDIAN
-    unsigned int lfbmode;  
+    unsigned int lfbmode;
     lfbmode=TDFXReadLongMMIO(pTDFX, SST_3D_LFBMODE);
 
     lfbmode&=~BIT(12); /* 0 bit 12 is byte swizzle */
@@ -113,7 +113,7 @@ TDFXSetLFBConfig(TDFXPtr pTDFX) {
     TDFXWriteLongMMIO(pTDFX, SST_3D_LFBMODE, lfbmode);
 #endif
     TDFXWriteLongMMIO(pTDFX, LFBMEMORYCONFIG, (pTDFX->backOffset>>12) |
-		      SST_RAW_LFB_ADDR_STRIDE_4K | 
+		      SST_RAW_LFB_ADDR_STRIDE_4K |
 		      ((pTDFX->stride+127)/128)<<SST_RAW_LFB_TILE_STRIDE_SHIFT);
   } else {
     int chip;
@@ -128,7 +128,7 @@ TDFXSetLFBConfig(TDFXPtr pTDFX) {
          lg2TileAperturePitch += 1, TileAperturePitch <<= 1);
     for (chip=0; chip<pTDFX->numChips; chip++) {
       TDFXWriteChipLongMMIO(pTDFX, chip, LFBMEMORYCONFIG, (bits&0x1FFF) |
-			    SST_RAW_LFB_ADDR_STRIDE(lg2TileAperturePitch) | 
+			    SST_RAW_LFB_ADDR_STRIDE(lg2TileAperturePitch) |
 			    ((bits&0x6000)<<10) |
 			    ((stride+127)/128)<<SST_RAW_LFB_TILE_STRIDE_SHIFT);
     }
@@ -161,7 +161,7 @@ static void TDFXSendNOPNoProp(ScrnInfoPtr pScrn)
   pTDFX=TDFXPTR(pScrn);
   TDFXMakeRoomNoProp(pTDFX, 1);
   TDFXWriteLongMMIO(pTDFX, SST_2D_COMMAND, SST_2D_NOP);
-}  
+}
 
 void TDFXSync(ScrnInfoPtr pScrn)
 {

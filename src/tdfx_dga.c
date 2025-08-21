@@ -10,7 +10,7 @@
 #include "tdfx.h"
 #include "vgaHW.h"
 
-static Bool TDFX_OpenFramebuffer(ScrnInfoPtr, char **, unsigned char **, 
+static Bool TDFX_OpenFramebuffer(ScrnInfoPtr, char **, unsigned char **,
 				 int *, int *, int *);
 static Bool TDFX_SetMode(ScrnInfoPtr, DGAModePtr);
 static int  TDFX_GetViewport(ScrnInfoPtr);
@@ -76,19 +76,19 @@ TDFXDGAInit(ScreenPtr pScreen)
     currentMode->imageHeight =  pTDFX->pixmapCacheLinesMax;
     currentMode->pixmapWidth = currentMode->imageWidth;
     currentMode->pixmapHeight = currentMode->imageHeight;
-    currentMode->maxViewportX = currentMode->imageWidth - 
+    currentMode->maxViewportX = currentMode->imageWidth -
                                 currentMode->viewportWidth;
     /* this might need to get clamped to some maximum */
     currentMode->maxViewportY = currentMode->imageHeight -
                                 currentMode->viewportHeight;
-    
+
     pMode = pMode->next;
     if (pMode == firstMode) break;
   }
-  
+
   pTDFX->DGAModes = modes;
-  
-  return DGAInit(pScreen, &TDFX_DGAFuncs, modes, num);  
+
+  return DGAInit(pScreen, &TDFX_DGAFuncs, modes, num);
 }
 
 static Bool
@@ -114,11 +114,11 @@ TDFX_SetMode(ScrnInfoPtr pScrn, DGAModePtr pMode)
 
      TDFXSwitchMode(pScrn, pMode->mode);
    }
-   
+
    return TRUE;
 }
 
-static int  
+static int
 TDFX_GetViewport(ScrnInfoPtr pScrn)
 {
     TDFXPtr pTDFX = TDFXPTR(pScrn);
@@ -126,7 +126,7 @@ TDFX_GetViewport(ScrnInfoPtr pScrn)
     return pTDFX->DGAViewportStatus;
 }
 
-static void 
+static void
 TDFX_SetViewport(ScrnInfoPtr pScrn, int x, int y, int flags)
 {
    TDFXPtr pTDFX = TDFXPTR(pScrn);
@@ -138,12 +138,12 @@ TDFX_SetViewport(ScrnInfoPtr pScrn, int x, int y, int flags)
    while(hwp->readST01(hwp) & 0x08);
    while(!(hwp->readST01(hwp) & 0x08));
 
-   pTDFX->DGAViewportStatus = 0;  
+   pTDFX->DGAViewportStatus = 0;
 }
 
-static Bool 
+static Bool
 TDFX_OpenFramebuffer(
-   ScrnInfoPtr pScrn, 
+   ScrnInfoPtr pScrn,
    char **name,
    unsigned char **mem,
    int *size,

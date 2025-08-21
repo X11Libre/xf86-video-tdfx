@@ -29,7 +29,7 @@ Bool TDFXDisableSLI(TDFXPtr pTDFX)
 		     CFG_INIT_ENABLE, i);
 
       PCI_READ_LONG(v, CFG_SLI_LFB_CTRL, i);
-      PCI_WRITE_LONG(v & ~(CFG_SLI_LFB_CPU_WR_EN | CFG_SLI_LFB_DPTCH_WR_EN | 
+      PCI_WRITE_LONG(v & ~(CFG_SLI_LFB_CPU_WR_EN | CFG_SLI_LFB_DPTCH_WR_EN |
 			   CFG_SLI_RD_EN),
 		     CFG_SLI_LFB_CTRL, i);
 #ifdef H3VDD
@@ -138,9 +138,9 @@ Bool TDFXSetupSLI(ScrnInfoPtr pScrn, Bool sliEnable, int aaSamples)
 			 SST_PCI_DISABLE_IO | SST_PCI_DISABLE_MEM |
 			 (5<<SST_PCI_RETRY_INTERVAL_SHIFT));
     v=pTDFX->readChipLong(pTDFX, i, TMUGBEINIT);
-    pTDFX->writeChipLong(pTDFX, i, TMUGBEINIT, 
+    pTDFX->writeChipLong(pTDFX, i, TMUGBEINIT,
 			 (v&~(SST_AA_CLK_DELAY | SST_AA_CLK_INVERT)) |
-			 (AACLKOUTDEL<<SST_AA_CLK_DELAY_SHIFT) | 
+			 (AACLKOUTDEL<<SST_AA_CLK_DELAY_SHIFT) |
 			 SST_AA_CLK_INVERT);
 
     if (pTDFX->numChips>1) {
@@ -156,7 +156,7 @@ Bool TDFXSetupSLI(ScrnInfoPtr pScrn, Bool sliEnable, int aaSamples)
       } else {
 	  PCI_READ_LONG(v, CFG_INIT_ENABLE, i);
 
-	  v = (v & ~CFG_SNOOP_MEMBASE0) | CFG_SNOOP_EN | 
+	  v = (v & ~CFG_SNOOP_MEMBASE0) | CFG_SNOOP_EN |
 	      CFG_SNOOP_MEMBASE0_EN | CFG_SNOOP_MEMBASE1_EN |
 	      CFG_SNOOP_SLAVE | CFG_SNOOP_FBIINIT_WR_EN |
 	      (((pTDFX->MMIOAddr[0]>>22)&0x3ff)<<CFG_SNOOP_MEMBASE0_SHIFT) |
@@ -242,7 +242,7 @@ Bool TDFXSetupSLI(ScrnInfoPtr pScrn, Bool sliEnable, int aaSamples)
       dwFormat|=CFG_AA_LFB_RD_DIVIDE_BY_4;
     /* These are wrong, because we don't know where the secondary buffers
        are located */
-    pTDFX->writeChipLong(pTDFX, i, CFG_AA_LFB_CTRL, 
+    pTDFX->writeChipLong(pTDFX, i, CFG_AA_LFB_CTRL,
 			 (pScrn->videoRam<<10 /* 2nd buf */ << CFG_AA_BASEADDR_SHIFT) |
 			 CFG_AA_LFB_CPU_WR_EN | CFG_AA_LFB_DPTCH_WR_EN |
 			 CFG_AA_LFB_RD_EN | dwFormat |
@@ -273,7 +273,7 @@ Bool TDFXSetupSLI(ScrnInfoPtr pScrn, Bool sliEnable, int aaSamples)
     }
     if (pTDFX->numChips==1 && aaSamples) {
 	/* 1 chip 2 AA */
-	PCI_WRITE_LONG(CFG_ENHANCED_VIDEO_EN | 
+	PCI_WRITE_LONG(CFG_ENHANCED_VIDEO_EN |
 		       CFG_VIDEO_LOCALMUX_DESKTOP_PLUS_OVERLAY |
 		       CFG_VIDEO_OTHERMUX_SEL_PIPE<<CFG_VIDEO_OTHERMUX_SEL_FALSE_SHIFT |
 		       CFG_DIVIDE_VIDEO_BY_2,
@@ -290,7 +290,7 @@ Bool TDFXSetupSLI(ScrnInfoPtr pScrn, Bool sliEnable, int aaSamples)
 	       !sliAnalog) {
       /* 2 chips 4 digital AA */
       if (!i) {
-	  PCI_WRITE_LONG(CFG_ENHANCED_VIDEO_EN | 
+	  PCI_WRITE_LONG(CFG_ENHANCED_VIDEO_EN |
 			 CFG_VIDEO_LOCALMUX_DESKTOP_PLUS_OVERLAY |
 			 (CFG_VIDEO_OTHERMUX_SEL_PIPE_PLUS_AAFIFO <<
 			  CFG_VIDEO_OTHERMUX_SEL_TRUE_SHIFT) |
@@ -400,7 +400,7 @@ Bool TDFXSetupSLI(ScrnInfoPtr pScrn, Bool sliEnable, int aaSamples)
 	  PCI_WRITE_LONG((((pTDFX->numChips-1)<<sliLinesLog2) <<
 			  CFG_SLI_RENDERMASK_FETCH_SHIFT) |
 			 (0x0 << CFG_SLI_COMPAREMASK_FETCH_SHIFT) |
-			 (((pTDFX->numChips-1)<<sliLinesLog2) << 
+			 (((pTDFX->numChips-1)<<sliLinesLog2) <<
 			  CFG_SLI_RENDERMASK_CRT_SHIFT) |
 			 (0x0 << CFG_SLI_COMPAREMASK_CRT_SHIFT),
 			 CFG_VIDEO_CTRL1, i);
@@ -419,7 +419,7 @@ Bool TDFXSetupSLI(ScrnInfoPtr pScrn, Bool sliEnable, int aaSamples)
 	  PCI_WRITE_LONG((((pTDFX->numChips-1)<<sliLinesLog2) <<
 			  CFG_SLI_RENDERMASK_FETCH_SHIFT) |
 			 ((i<<sliLinesLog2) << CFG_SLI_COMPAREMASK_FETCH_SHIFT) |
-			 (((pTDFX->numChips-1)<<sliLinesLog2) << 
+			 (((pTDFX->numChips-1)<<sliLinesLog2) <<
 			  CFG_SLI_RENDERMASK_CRT_SHIFT) |
 			 ((i<<sliLinesLog2) <<
 			  CFG_SLI_COMPAREMASK_CRT_SHIFT),
@@ -538,7 +538,7 @@ Bool TDFXSetupSLI(ScrnInfoPtr pScrn, Bool sliEnable, int aaSamples)
 	  PCI_WRITE_LONG((((pTDFX->numChips-1)<<sliLinesLog2) <<
 			  CFG_SLI_RENDERMASK_FETCH_SHIFT) |
 			 (0x0 << CFG_SLI_COMPAREMASK_FETCH_SHIFT) |
-			 (((pTDFX->numChips-1)<<sliLinesLog2) << 
+			 (((pTDFX->numChips-1)<<sliLinesLog2) <<
 			  CFG_SLI_RENDERMASK_CRT_SHIFT) |
 			 (0x0 << CFG_SLI_COMPAREMASK_CRT_SHIFT),
 			 CFG_VIDEO_CTRL1, i);
@@ -556,7 +556,7 @@ Bool TDFXSetupSLI(ScrnInfoPtr pScrn, Bool sliEnable, int aaSamples)
 	  PCI_WRITE_LONG((((pTDFX->numChips-1)<<sliLinesLog2) <<
 			  CFG_SLI_RENDERMASK_FETCH_SHIFT) |
 			 ((i<<sliLinesLog2) << CFG_SLI_COMPAREMASK_FETCH_SHIFT) |
-			 (((pTDFX->numChips-1)<<sliLinesLog2) << 
+			 (((pTDFX->numChips-1)<<sliLinesLog2) <<
 			  CFG_SLI_RENDERMASK_CRT_SHIFT) |
 			 ((i<<sliLinesLog2) << CFG_SLI_COMPAREMASK_CRT_SHIFT),
 			 CFG_VIDEO_CTRL1, i);

@@ -44,7 +44,7 @@ typedef char  int8;
     cmdCnt=n; \
     TDFXAllocateSlots(p, (n)+1); \
   while (0)
-#define TDFXWriteLong(p, a, v) 
+#define TDFXWriteLong(p, a, v)
   do { \
     if (lastAddr & a<lastAddr) \
       ErrorF("TDFXWriteLong not ordered\n"); \
@@ -110,7 +110,7 @@ void TDFXSendNOPFifo2D(ScrnInfoPtr pScreen);
   do { \
     *pTDFX->fifoMirrorPtr++ = _val; \
     *pTDFX->fifoPtr++ = _val; \
-  } while(0) 
+  } while(0)
 #else
 #if X_BYTE_ORDER == X_BIG_ENDIAN
 #define WRITE_FIFO(ptr, loc, _val) \
@@ -121,7 +121,7 @@ void TDFXSendNOPFifo2D(ScrnInfoPtr pScreen);
 #define WRITE_FIFO(ptr, loc, _val) \
   do { \
     *pTDFX->fifoPtr++ = _val; \
-  } while(0) 
+  } while(0)
 #endif /* X_BYTE_ORDER == X_BIG_ENDIAN */
 #endif /* DEBUG_FIFO */
 
@@ -169,8 +169,8 @@ void TDFXSendNOPFifo2D(ScrnInfoPtr pScreen);
 /*
 ** These are used to select a register mask for use with
 ** command fifo packet type 4.  The defines represent an
-** offset register from the base register. 
-** e.g. R5 = baseReg + 5, R0 = baseReg etc.. 
+** offset register from the base register.
+** e.g. R5 = baseReg + 5, R0 = baseReg etc..
 */
 #define R0  (1 << 0)
 #define R1  (1 << 1)
