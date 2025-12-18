@@ -39,7 +39,6 @@
 
 /* Macros to aid source compatibility between pci-rework and "classic" builds.
  */
-#ifdef XSERVER_LIBPCIACCESS
 #include <pciaccess.h>
 
 #define DEVICE_ID(p) (p)->device_id
@@ -55,21 +54,6 @@
 
 #define PCI_MEM_BASE(p, region) \
     (p)->regions[region].base_addr
-#else
-#define DEVICE_ID(p) (p)->chipType
-
-#define PCI_READ_LONG(value, offset, card_index) \
-    (value) = pciReadLong(pTDFX->PciTag[(card_index)], (offset))
-
-#define PCI_WRITE_LONG(value, offset, card_index) \
-    pciWriteLong(pTDFX->PciTag[(card_index)], (offset), (value))
-
-#define PCI_IO_BASE(p, region) \
-    (p)->ioBase[region]
-
-#define PCI_MEM_BASE(p, region) \
-    (p)->memBase[region]
-#endif
 
 #define PCI_VENDOR_3DFX			0x121A
 
@@ -186,7 +170,6 @@ typedef struct TextureData_t {
 
 #define MAXCHIPS 4
 
-#ifdef XSERVER_LIBPCIACCESS
 enum tdfx_chips {
     Banshee = 0,
     Voodoo3_2000,
@@ -195,18 +178,11 @@ enum tdfx_chips {
     Voodoo5,
     MAX_VOODOO_CARDS
 };
-#endif
 
 typedef struct _TDFXRec {
-#ifdef XSERVER_LIBPCIACCESS
     enum tdfx_chips match_id;
     void *MMIOBase[MAXCHIPS];
     void *FbBase;
-#else
-  unsigned char *MMIOBase[MAXCHIPS];
-  unsigned char *FbBase;
-  unsigned char *myFbBase;
-#endif
   unsigned long PIOBase[MAXCHIPS];
   long FbMapSize;
   int pixelFormat;
@@ -215,18 +191,11 @@ typedef struct _TDFXRec {
   int maxClip;
   int MaxClock;
   int ChipType;
-#ifdef XSERVER_LIBPCIACCESS
     struct pci_device *PciInfo[MAXCHIPS];
-#else
-  pciVideoPtr PciInfo;
-#endif
   unsigned long LinearAddr[MAXCHIPS];
   unsigned long MMIOAddr[MAXCHIPS];
   EntityInfoPtr pEnt;
   int numChips;
-#ifndef XSERVER_LIBPCIACCESS
-  PCITAG PciTag[MAXCHIPS];
-#endif
   Bool Primary;
   int HasSGRAM;
   int PciCnt;

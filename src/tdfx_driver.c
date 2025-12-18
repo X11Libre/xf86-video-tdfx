@@ -96,12 +96,8 @@ static const OptionInfoRec *	TDFXAvailableOptions(int chipid, int busid);
 static void TDFXIdentify(int flags);
 
 /* Identify if there is any hardware present that I know how to drive. */
-#ifdef XSERVER_LIBPCIACCESS
 static Bool TDFXPciProbe(DriverPtr drv, int entity_num,
     struct pci_device *dev, intptr_t match_data);
-#else
-static Bool TDFXProbe(DriverPtr drv, int flags);
-#endif
 
 /* Process the config file and see if we have a valid configuration */
 static Bool TDFXPreInit(ScrnInfoPtr pScrn, int flags);
@@ -134,7 +130,6 @@ static void TDFXBlockHandler(BLOCKHANDLER_ARGS_DECL);
 static void TDFXDisplayPowerManagementSet(ScrnInfoPtr pScrn,
 					int PowerManagermentMode, int flags);
 
-#ifdef XSERVER_LIBPCIACCESS
 #define TDFX_DEVICE_MATCH(d, sub, i) \
     { PCI_VENDOR_3DFX, (d), PCI_MATCH_ANY, (sub), 0, 0, (i) }
 
@@ -161,28 +156,18 @@ static const int MaxClocks[MAX_VOODOO_CARDS] = {
     [Voodoo3_Unknown] = 300000,
     [Voodoo5] = 350000
 };
-#endif
-
 
 _X_EXPORT DriverRec TDFX = {
   TDFX_VERSION,
   TDFX_DRIVER_NAME,
   TDFXIdentify,
-#ifdef XSERVER_LIBPCIACCESS
   NULL,
-#else
-  TDFXProbe,
-#endif
-
   TDFXAvailableOptions,
   NULL,
   0,
   NULL,
-
-#ifdef XSERVER_LIBPCIACCESS
   tdfx_device_match,
   TDFXPciProbe
-#endif
 };
 
 /* Chipsets */
@@ -194,17 +179,6 @@ static SymTabRec TDFXChipsets[] = {
   { PCI_CHIP_VOODOO5, "3dfx Voodoo5"},
   { -1, NULL }
 };
-
-#ifndef XSERVER_LIBPCIACCESS
-static PciChipsets TDFXPciChipsets[] = {
-  { PCI_CHIP_BANSHEE, PCI_CHIP_BANSHEE, RES_SHARED_VGA },
-  { PCI_CHIP_VELOCITY, PCI_CHIP_VELOCITY, RES_SHARED_VGA },
-  { PCI_CHIP_VOODOO3, PCI_CHIP_VOODOO3, RES_SHARED_VGA },
-  { PCI_CHIP_VOODOO4, PCI_CHIP_VOODOO4, RES_SHARED_VGA },
-  { PCI_CHIP_VOODOO5, PCI_CHIP_VOODOO5, RES_SHARED_VGA },
-  { -1, -1, RES_UNDEFINED }
-};
-#endif
 
 /* !!! Do we want an option for alternate clocking? !!! */
 
@@ -326,7 +300,6 @@ TDFXProbeDDC(ScrnInfoPtr pScrn, int index)
     }
 }
 
-#ifdef XSERVER_LIBPCIACCESS
 /**
  * TDFXPciProbe
  *
@@ -381,73 +354,6 @@ TDFXPciProbe(DriverPtr drv, int entity_num, struct pci_device *dev,
 
     return (pScrn != NULL);
 }
-#else
-/**
- * TDFXProbe
- *
- * Look through the PCI bus to find cards that are TDFX boards.
- * Setup the dispatch table for the rest of the driver functions.
- */
-static Bool
-TDFXProbe(DriverPtr drv, int flags)
-{
-  int i, numUsed, numDevSections, *usedChips;
-  GDevPtr *devSections;
-  Bool foundScreen = FALSE;
-
-  TDFXTRACE("TDFXProbe start\n");
-  /*
-   Find the config file Device sections that match this
-   driver, and return if there are none.
-   */
-  if ((numDevSections = xf86MatchDevice(TDFX_DRIVER_NAME, &devSections))<=0) {
-    return FALSE;
-  }
-
-  /*
-     Since these Probing is just checking the PCI data the server already
-     collected.
-  */
-  if (!xf86GetPciVideoInfo()) return FALSE;
-
-  numUsed = xf86MatchPciInstances(TDFX_NAME, PCI_VENDOR_3DFX,
-				  TDFXChipsets, TDFXPciChipsets,
-				  devSections, numDevSections,
-				  drv, &usedChips);
-
-  free(devSections);
-  if (numUsed<=0) return FALSE;
-
-  if (flags & PROBE_DETECT)
-    foundScreen = TRUE;
-  else for (i=0; i<numUsed; i++) {
-    ScrnInfoPtr pScrn;
-
-    /* Allocate new ScrnInfoRec and claim the slot */
-    pScrn = NULL;
-    if ((pScrn = xf86ConfigPciEntity(pScrn, 0, usedChips[i],
-			   TDFXPciChipsets, NULL, NULL, NULL, NULL, NULL))) {
-
-	pScrn->driverVersion = TDFX_VERSION;
-	pScrn->driverName = TDFX_DRIVER_NAME;
-	pScrn->name = TDFX_NAME;
-	pScrn->Probe = TDFXProbe;
-	pScrn->PreInit = TDFXPreInit;
-	pScrn->ScreenInit = TDFXScreenInit;
-	pScrn->SwitchMode = TDFXSwitchMode;
-	pScrn->AdjustFrame = TDFXAdjustFrame;
-	pScrn->EnterVT = TDFXEnterVT;
-	pScrn->LeaveVT = TDFXLeaveVT;
-	pScrn->FreeScreen = TDFXFreeScreen;
-	pScrn->ValidMode = TDFXValidMode;
-	foundScreen = TRUE;
-    }
-  }
-  free(usedChips);
-
-  return foundScreen;
-}
-#endif
 
 static int
 TDFXCountRam(ScrnInfoPtr pScrn) {
@@ -562,34 +468,6 @@ static int TDFXSizeToCfg(int size)
     return -1;
   }
 }
-
-#ifndef XSERVER_LIBPCIACCESS
-static void
-TDFXFindChips(ScrnInfoPtr pScrn, pciVideoPtr match)
-{
-  TDFXPtr pTDFX;
-  pciVideoPtr *ppPci;
-
-  pTDFX=TDFXPTR(pScrn);
-  pTDFX->numChips=0;
-  pTDFX->ChipType=match->chipType;
-  for (ppPci = xf86GetPciVideoInfo(); *ppPci != NULL; ppPci++) {
-    if ((*ppPci)->bus == match->bus &&
-	(*ppPci)->device == match->device) {
-      pTDFX->PciTag[pTDFX->numChips] = pciTag((*ppPci)->bus,
-					      (*ppPci)->device,
-					      (*ppPci)->func);
-      pTDFX->PIOBase[pTDFX->numChips] =
-	pScrn->domainIOBase + ((*ppPci)->ioBase[2] & 0xFFFFFFFCU);
-      pTDFX->numChips++;
-    }
-  }
-  xf86DrvMsgVerb(pScrn->scrnIndex, X_INFO, 3,
-	"TDFXFindChips: found %d chip(s)\n", pTDFX->numChips);
-  /* Disable the secondary chips for now */
-  pTDFX->numChips=1;
-}
-#endif
 
 static void
 TDFXInitChips(ScrnInfoPtr pScrn)
@@ -750,29 +628,13 @@ TDFXPreInit(ScrnInfoPtr pScrn, int flags)
   MessageType from;
   int flags24;
   rgb defaultWeight = {0, 0, 0};
-#ifdef XSERVER_LIBPCIACCESS
     struct pci_device *match;
-#else
-  pciVideoPtr match;
-#endif
   int availableMem;
 
   TDFXTRACE("TDFXPreInit start\n");
   if (pScrn->numEntities != 1) return FALSE;
 
-#ifndef XSERVER_LIBPCIACCESS
-  /* Allocate driverPrivate */
-  pTDFX = TDFXGetRec(pScrn);
-  if (pTDFX == NULL) {
-    return FALSE;
-  }
-
-
-  pTDFX->initDone=FALSE;
-  pTDFX->pEnt = xf86GetEntityInfo(pScrn->entityList[0]);
-#else
     pTDFX = TDFXPTR(pScrn);
-#endif
 
   if (flags & PROBE_DETECT) {
 #if !defined(__powerpc__)
@@ -815,39 +677,9 @@ TDFXPreInit(ScrnInfoPtr pScrn, int flags)
 #endif
 #endif
 
-#ifdef XSERVER_LIBPCIACCESS
     match = pTDFX->PciInfo[0];
     pTDFX->ChipType = DEVICE_ID(match);
-#else
-  match=pTDFX->PciInfo=xf86GetPciInfoForEntity(pTDFX->pEnt->index);
-  TDFXFindChips(pScrn, match);
-  pTDFX->Primary = xf86IsPrimaryPci(pTDFX->PciInfo);
-#endif
 
-#ifndef XSERVER_LIBPCIACCESS
-  if (xf86RegisterResources(pTDFX->pEnt->index, NULL, ResExclusive)) {
-      TDFXFreeRec(pScrn);
-      return FALSE;
-  }
-
-  /*
-   * We don't need VGA resources during OPERATING state. However I'm
-   * not sure if they are disabled.
-   */
-  xf86SetOperatingState(resVgaIo, pTDFX->pEnt->index, ResDisableOpr);
-
-  /* Is VGA memory disabled during OPERATING state? */
-  xf86SetOperatingState(resVgaMem, pTDFX->pEnt->index, ResUnusedOpr);
-    /*
-     * I'm sure we don't need to set these. All resources
-     * for these operations are exclusive.
-     */
-  if (pTDFX->usePIO) {
-      pScrn->racMemFlags = 0;
-      pScrn->racIoFlags = RAC_FB | RAC_COLORMAP | RAC_CURSOR | RAC_VIEWPORT;
-  } else
-      pScrn->racMemFlags = 0;
-#endif
   /* Set pScrn->monitor */
   pScrn->monitor = pScrn->confScreen->monitor;
 
@@ -1013,33 +845,7 @@ TDFXPreInit(ScrnInfoPtr pScrn, int flags)
       pTDFX->MaxClock = pTDFX->pEnt->device->dacSpeeds[0];
     from = X_CONFIG;
   } else {
-#ifdef XSERVER_LIBPCIACCESS
       pTDFX->MaxClock = MaxClocks[pTDFX->match_id];
-#else
-    switch (pTDFX->ChipType) {
-    case PCI_CHIP_BANSHEE:
-      pTDFX->MaxClock = 270000;
-      break;
-    case PCI_CHIP_VELOCITY:
-    case PCI_CHIP_VOODOO3:
-      switch(match->subsysCard) {
-      case PCI_CARD_VOODOO3_2000:
-	pTDFX->MaxClock = 300000;
-	break;
-      case PCI_CARD_VOODOO3_3000:
-	pTDFX->MaxClock = 350000;
-	break;
-      default:
-	pTDFX->MaxClock = 300000;
-	break;
-      }
-      break;
-    case PCI_CHIP_VOODOO4:
-    case PCI_CHIP_VOODOO5:
-      pTDFX->MaxClock = 350000;
-      break;
-    }
-#endif
   }
   clockRanges = XNFcallocarray(1, sizeof(ClockRange));
   clockRanges->next=NULL;
@@ -1212,15 +1018,10 @@ TDFXMapMem(ScrnInfoPtr pScrn)
 {
     int i;
     TDFXPtr pTDFX = TDFXPTR(pScrn);
-#ifdef XSERVER_LIBPCIACCESS
     int err;
-#else
-    const int mmioFlags = VIDMEM_MMIO | VIDMEM_READSIDEEFFECT;
-#endif
 
   TDFXTRACE("TDFXMapMem start\n");
 
-#ifdef XSERVER_LIBPCIACCESS
     /* FIXME: I'm not convinced that this is correct for SLI cards, but I
      * FIXME: don't have any such hardware to test.
      */
@@ -1249,22 +1050,6 @@ TDFXMapMem(ScrnInfoPtr pScrn)
 		   "Unable to map framebuffer (%d).\n", err);
 	return FALSE;
     }
-#else
-  for (i=0; i<pTDFX->numChips; i++) {
-    pTDFX->MMIOBase[i] = xf86MapPciMem(pScrn->scrnIndex, mmioFlags,
-				       pTDFX->PciTag[i],
-				       pTDFX->MMIOAddr[i],
-				       TDFXIOMAPSIZE);
-
-    if (!pTDFX->MMIOBase[i]) return FALSE;
-  }
-
-  pTDFX->FbBase = xf86MapPciMem(pScrn->scrnIndex, VIDMEM_FRAMEBUFFER,
-				pTDFX->PciTag[0],
-				pTDFX->LinearAddr[0],
-				pTDFX->FbMapSize);
-  if (!pTDFX->FbBase) return FALSE;
-#endif
 
   return TRUE;
 }
@@ -1278,7 +1063,6 @@ TDFXUnmapMem(ScrnInfoPtr pScrn)
   TDFXTRACE("TDFXUnmapMem start\n");
   pTDFX = TDFXPTR(pScrn);
 
-#ifdef XSERVER_LIBPCIACCESS
     pci_device_unmap_range(pTDFX->PciInfo[0],
                            pTDFX->FbBase,
                            pTDFX->FbMapSize);
@@ -1291,16 +1075,7 @@ TDFXUnmapMem(ScrnInfoPtr pScrn)
 
     (void) memset(pTDFX->MMIOBase, 0, sizeof(pTDFX->MMIOBase));
     pTDFX->FbBase = NULL;
-#else
-  for (i=0; i<pTDFX->numChips; i++) {
-    xf86UnMapVidMem(pScrn->scrnIndex, (pointer)pTDFX->MMIOBase[i],
-		    TDFXIOMAPSIZE);
-    pTDFX->MMIOBase[i]=0;
-  }
 
-  xf86UnMapVidMem(pScrn->scrnIndex, (pointer)pTDFX->FbBase, pTDFX->FbMapSize);
-  pTDFX->FbBase = 0;
-#endif
   return TRUE;
 }
 

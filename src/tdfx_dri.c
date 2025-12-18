@@ -127,19 +127,7 @@ Bool TDFXDRIScreenInit(ScreenPtr pScreen)
 
   pDRIInfo->drmDriverName = TDFXKernelDriverName;
   pDRIInfo->clientDriverName = TDFXClientDriverName;
-#ifdef XSERVER_LIBPCIACCESS
     pDRIInfo->busIdString = DRICreatePCIBusID(pTDFX->PciInfo[0]);
-#else
-  if (xf86LoaderCheckSymbol("DRICreatePCIBusID")) {
-    pDRIInfo->busIdString = DRICreatePCIBusID(pTDFX->PciInfo);
-  } else {
-    pDRIInfo->busIdString = malloc(64);
-    snprintf(pDRIInfo->busIdString, 64, "PCI:%d:%d:%d",
-	    ((pciConfigPtr)pTDFX->PciInfo->thisCard)->busnum,
-	    ((pciConfigPtr)pTDFX->PciInfo->thisCard)->devnum,
-	    ((pciConfigPtr)pTDFX->PciInfo->thisCard)->funcnum);
-  }
-#endif
   pDRIInfo->ddxDriverMajorVersion = TDFX_MAJOR_VERSION;
   pDRIInfo->ddxDriverMinorVersion = TDFX_MINOR_VERSION;
   pDRIInfo->ddxDriverPatchVersion = TDFX_PATCHLEVEL;
@@ -282,11 +270,7 @@ TDFXDRIFinishScreenInit(ScreenPtr pScreen)
   pTDFX->pDRIInfo->driverSwapMethod = DRI_HIDE_X_CONTEXT;
 
   pTDFXDRI=(TDFXDRIPtr)pTDFX->pDRIInfo->devPrivate;
-#ifdef XSERVER_LIBPCIACCESS
   pTDFXDRI->deviceID = DEVICE_ID(pTDFX->PciInfo[0]);
-#else
-  pTDFXDRI->deviceID = DEVICE_ID(pTDFX->PciInfo);
-#endif
   pTDFXDRI->width=pScrn->virtualX;
   pTDFXDRI->height=pScrn->virtualY;
   pTDFXDRI->mem=pScrn->videoRam*1024;

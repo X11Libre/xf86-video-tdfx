@@ -67,14 +67,6 @@ XORG_DRIVER_CHECK_EXT(DPMSExtension, xextproto)
 PKG_CHECK_MODULES(XORG, [xorg-server >= 1.18 xproto fontsproto $REQUIRED_MODULES])
 sdkdir=`$PKG_CONFIG --variable=sdkdir xorg-server`
 
-# Checks for libraries.
-SAVE_CPPFLAGS="$CPPFLAGS"
-CPPFLAGS="$CPPFLAGS $XORG_CFLAGS"
-AC_CHECK_DECL(XSERVER_LIBPCIACCESS,
-	      [XSERVER_LIBPCIACCESS=yes],[XSERVER_LIBPCIACCESS=no],
-	      [#include "xorg-server.h"])
-CPPFLAGS="$SAVE_CPPFLAGS"
-
 if test "x$DRI" != xno; then
         if test "$cross_compiling" = "no" ; then
                 AC_CHECK_FILE([${sdkdir}/dri.h],
@@ -109,11 +101,8 @@ if test "$DRI" = yes; then
         AC_DEFINE(TDFXDRI_DEVEL,1,[Enable developmental DRI driver support])
 fi
 
-if test "x$XSERVER_LIBPCIACCESS" = xyes; then
-    PKG_CHECK_MODULES([PCIACCESS], [pciaccess >= 0.8.0])
-    XORG_CFLAGS="$XORG_CFLAGS $PCIACCESS_CFLAGS"
-fi
-AM_CONDITIONAL(XSERVER_LIBPCIACCESS, test "x$XSERVER_LIBPCIACCESS" = xyes)
+PKG_CHECK_MODULES([PCIACCESS], [pciaccess >= 0.8.0])
+XORG_CFLAGS="$XORG_CFLAGS $PCIACCESS_CFLAGS"
 
 AC_SUBST([moduledir])
 
