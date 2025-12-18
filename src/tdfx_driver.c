@@ -231,8 +231,6 @@ static const OptionInfoRec TDFXOptions[] = {
   { -1, NULL, OPTV_NONE, {0}, FALSE}
 };
 
-#ifdef XFree86LOADER
-
 static MODULESETUPPROTO(tdfxSetup);
 
 static XF86ModuleVersionInfo tdfxVersRec =
@@ -272,8 +270,6 @@ tdfxSetup(pointer module, pointer opts, int *errmaj, int *errmin)
 	return NULL;
     }
 }
-
-#endif
 
 /*
  * TDFXGetRec and TDFXFreeRec --
