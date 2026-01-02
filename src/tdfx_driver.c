@@ -124,7 +124,7 @@ static void TDFXFreeScreen(ScrnInfoPtr pScrn);
 static ModeStatus TDFXValidMode(ScrnInfoPtr pScrn, DisplayModePtr mode,
 				Bool verbose, int flags);
 
-static void TDFXBlockHandler(BLOCKHANDLER_ARGS_DECL);
+static void TDFXBlockHandler(ScreenPtr pScreen, pointer pTimeout);
 
 /* Switch to various Display Power Management System levels */
 static void TDFXDisplayPowerManagementSet(ScrnInfoPtr pScrn,
@@ -2189,13 +2189,13 @@ TDFXSaveScreen(ScreenPtr pScreen, int mode)
 }
 
 static void
-TDFXBlockHandler(BLOCKHANDLER_ARGS_DECL)
+TDFXBlockHandler(ScreenPtr pScreen, pointer pTimeout)
 {
     ScrnInfoPtr pScrn   = xf86ScreenToScrn(pScreen);
     TDFXPtr     pTDFX   = TDFXPTR(pScrn);
 
     pScreen->BlockHandler = pTDFX->BlockHandler;
-    (*pScreen->BlockHandler) (BLOCKHANDLER_ARGS);
+    (*pScreen->BlockHandler) (pScreen, pTimeout);
     pScreen->BlockHandler = TDFXBlockHandler;
 
     if(pTDFX->VideoTimerCallback) {

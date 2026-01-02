@@ -117,7 +117,6 @@ extern void FillPrivateDRI(TDFXPtr pTDFX, TDFXDRIPtr pTDFXDRI);
 
 #include "xf86fbman.h"
 #include "xf86Cursor.h"
-#include "compat-api.h"
 
 typedef void (*TDFXWriteIndexedByteFunc)(TDFXPtr pTDFX, int addr,
 					 char index, char value);
