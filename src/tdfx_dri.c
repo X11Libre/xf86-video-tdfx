@@ -31,13 +31,13 @@ static void TDFXDRITransitionTo2d(ScreenPtr pScreen);
 static void TDFXDRITransitionTo3d(ScreenPtr pScreen);
 
 static void
-TDFXDoWakeupHandler(WAKEUPHANDLER_ARGS_DECL)
+TDFXDoWakeupHandler(ScreenPtr pScreen, int result)
 {
   ScrnInfoPtr pScrn = xf86ScreenToScrn(pScreen);
   TDFXPtr pTDFX = TDFXPTR(pScrn);
 
   pTDFX->pDRIInfo->wrap.WakeupHandler = pTDFX->coreWakeupHandler;
-  (*pTDFX->pDRIInfo->wrap.WakeupHandler) (WAKEUPHANDLER_ARGS);
+  (*pTDFX->pDRIInfo->wrap.WakeupHandler) (pScreen, result);
   pTDFX->pDRIInfo->wrap.WakeupHandler = TDFXDoWakeupHandler;
 
 
@@ -45,7 +45,7 @@ TDFXDoWakeupHandler(WAKEUPHANDLER_ARGS_DECL)
 }
 
 static void
-TDFXDoBlockHandler(BLOCKHANDLER_ARGS_DECL)
+TDFXDoBlockHandler(ScreenPtr pScreen, pointer pTimeout)
 {
   ScrnInfoPtr pScrn = xf86ScreenToScrn(pScreen);
   TDFXPtr pTDFX = TDFXPTR(pScrn);
@@ -53,7 +53,7 @@ TDFXDoBlockHandler(BLOCKHANDLER_ARGS_DECL)
   TDFXCheckSync(pScrn);
 
   pTDFX->pDRIInfo->wrap.BlockHandler = pTDFX->coreBlockHandler;
-  (*pTDFX->pDRIInfo->wrap.BlockHandler) (BLOCKHANDLER_ARGS);
+  (*pTDFX->pDRIInfo->wrap.BlockHandler) (pScreen, pTimeout);
   pTDFX->pDRIInfo->wrap.BlockHandler = TDFXDoBlockHandler;
 
 }
