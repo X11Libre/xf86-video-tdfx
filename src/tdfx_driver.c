@@ -124,7 +124,7 @@ static void TDFXFreeScreen(ScrnInfoPtr pScrn);
 static ModeStatus TDFXValidMode(ScrnInfoPtr pScrn, DisplayModePtr mode,
 				Bool verbose, int flags);
 
-static void TDFXBlockHandler(ScreenPtr pScreen, pointer pTimeout);
+static void TDFXBlockHandler(ScreenPtr pScreen, void *pTimeout);
 
 /* Switch to various Display Power Management System levels */
 static void TDFXDisplayPowerManagementSet(ScrnInfoPtr pScrn,
@@ -223,8 +223,8 @@ static XF86ModuleVersionInfo tdfxVersRec =
 
 _X_EXPORT XF86ModuleData tdfxModuleData = {&tdfxVersRec, tdfxSetup, 0};
 
-static pointer
-tdfxSetup(pointer module, pointer opts, int *errmaj, int *errmin)
+static void*
+tdfxSetup(void *module, void *opts, int *errmaj, int *errmin)
 {
     static Bool setupDone = FALSE;
 
@@ -238,7 +238,7 @@ tdfxSetup(pointer module, pointer opts, int *errmaj, int *errmin)
 	 * The return value must be non-NULL on success even though there
 	 * is no TearDownProc.
 	 */
-	return (pointer)1;
+	return (void*)1;
     } else {
 	if (errmaj) *errmaj = LDR_ONCEONLY;
 	return NULL;
@@ -2189,7 +2189,7 @@ TDFXSaveScreen(ScreenPtr pScreen, int mode)
 }
 
 static void
-TDFXBlockHandler(ScreenPtr pScreen, pointer pTimeout)
+TDFXBlockHandler(ScreenPtr pScreen, void *pTimeout)
 {
     ScrnInfoPtr pScrn   = xf86ScreenToScrn(pScreen);
     TDFXPtr     pTDFX   = TDFXPTR(pScrn);
