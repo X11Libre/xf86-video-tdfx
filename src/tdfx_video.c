@@ -93,14 +93,14 @@ static XF86VideoFormatRec TextureFormats[] =
 
 static XF86AttributeRec OverlayAttributes[] =
 {
-   {XvSettable | XvGettable, 0, (1 << 24) - 1, "XV_COLORKEY"},
-   {XvSettable | XvGettable, 0, 1, "XV_FILTER_QUALITY"}
+   {XvSettable | XvGettable, 0, (1 << 24) - 1, (char *) "XV_COLORKEY"},
+   {XvSettable | XvGettable, 0, 1, (char *) "XV_FILTER_QUALITY"}
 };
 
 static XF86AttributeRec TextureAttributes[] =
 {
-   {XvSettable | XvGettable, 0, (1 << 24) - 1, "XV_COLORKEY"},
-   {XvSettable | XvGettable, 0, 1, "XV_FILTER_QUALITY"}
+   {XvSettable | XvGettable, 0, (1 << 24) - 1, (char *) "XV_COLORKEY"},
+   {XvSettable | XvGettable, 0, 1, (char *) "XV_FILTER_QUALITY"}
 };
 
 static XF86ImageRec OverlayImages[] =
