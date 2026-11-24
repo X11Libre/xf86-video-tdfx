@@ -1889,7 +1889,7 @@ TDFXScreenInit(ScreenPtr pScreen, int argc, char **argv) {
   case 16:
   case 24:
   case 32:
-    if (!fbScreenInit(pScreen, pTDFX->FbBase+pTDFX->fbOffset,
+    if (!fbScreenInit(pScreen, (unsigned char *)pTDFX->FbBase+pTDFX->fbOffset,
 		       pScrn->virtualX, pScrn->virtualY,
 		       pScrn->xDpi, pScrn->yDpi,
 		       pScrn->displayWidth, pScrn->bitsPerPixel))

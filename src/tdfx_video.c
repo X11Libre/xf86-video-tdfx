@@ -93,14 +93,14 @@ static XF86VideoFormatRec TextureFormats[] =
 
 static XF86AttributeRec OverlayAttributes[] =
 {
-   {XvSettable | XvGettable, 0, (1 << 24) - 1, "XV_COLORKEY"},
-   {XvSettable | XvGettable, 0, 1, "XV_FILTER_QUALITY"}
+   {XvSettable | XvGettable, 0, (1 << 24) - 1, (char *) "XV_COLORKEY"},
+   {XvSettable | XvGettable, 0, 1, (char *) "XV_FILTER_QUALITY"}
 };
 
 static XF86AttributeRec TextureAttributes[] =
 {
-   {XvSettable | XvGettable, 0, (1 << 24) - 1, "XV_COLORKEY"},
-   {XvSettable | XvGettable, 0, 1, "XV_FILTER_QUALITY"}
+   {XvSettable | XvGettable, 0, (1 << 24) - 1, (char *) "XV_COLORKEY"},
+   {XvSettable | XvGettable, 0, 1, (char *) "XV_FILTER_QUALITY"}
 };
 
 static XF86ImageRec OverlayImages[] =
@@ -578,19 +578,19 @@ YUVPlanarToPacked (ScrnInfoPtr pScrn,
    /* Copy Y plane (twice as much Y as U or V) */
    psrc = buf;
    psrc += (src_x & ~0x1) + src_y * width;
-   pdst = pTDFX->MMIOBase[0] + YUV_Y_BASE;
+   pdst = (unsigned char *)pTDFX->MMIOBase[0] + YUV_Y_BASE;
    TDFXCopyData(psrc, pdst, width, 1024, src_h, src_w + (src_x & 0x1));
 
    /* Copy V plane */
    psrc = buf + width * height;
    psrc += (src_x >> 1) + (src_y >> 1) * (width >> 1);
-   pdst = pTDFX->MMIOBase[0] + YUV_V_BASE;
+   pdst = (unsigned char *)pTDFX->MMIOBase[0] + YUV_V_BASE;
    TDFXCopyData(psrc, pdst, width >> 1, 1024, src_h >> 1, src_w >> 1);
 
    /* Copy U plane */
    psrc = buf + width * height + (width >> 1) * (height >> 1);
    psrc += (src_x >> 1) + (src_y >> 1) * (width >> 1);
-   pdst = pTDFX->MMIOBase[0] + YUV_U_BASE;
+   pdst = (unsigned char *)pTDFX->MMIOBase[0] + YUV_U_BASE;
    TDFXCopyData(psrc, pdst, width >> 1, 1024, src_h >> 1, src_w >> 1);
 
    /* IDLE until the copy finished, timeout for safety */
@@ -936,7 +936,7 @@ TDFXPutImageOverlay(
    /* Flip to other buffer for next time */
    pTDFX->whichOverlayBuffer ^= 1;
 
-   dst_start = pTDFX->FbBase + offset;
+   dst_start = (unsigned char *)pTDFX->FbBase + offset;
 
    switch(id) {
     case FOURCC_YV12:

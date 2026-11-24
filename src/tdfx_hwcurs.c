@@ -81,7 +81,7 @@ TDFXLoadCursorImage(ScrnInfoPtr pScrn, unsigned char *src)
 #if X_BYTE_ORDER == X_BIG_ENDIAN
   {
     int i;
-    unsigned int *ptr=(unsigned int *)(pTDFX->FbBase+pTDFX->cursorOffset);
+    unsigned int *ptr=(unsigned int *)((unsigned char *)pTDFX->FbBase+pTDFX->cursorOffset);
 
     for (i=0; i<256; i++) {
       unsigned int val = ((unsigned int *)src)[i];
@@ -89,7 +89,7 @@ TDFXLoadCursorImage(ScrnInfoPtr pScrn, unsigned char *src)
     }
   }
 #else
-  memcpy(pTDFX->FbBase+pTDFX->cursorOffset, src, 1024);
+  memcpy((unsigned char *)pTDFX->FbBase+pTDFX->cursorOffset, src, 1024);
 #endif
 }
 
