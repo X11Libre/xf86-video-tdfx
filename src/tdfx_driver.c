@@ -87,6 +87,10 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include "dri.h"
 #endif
 
+#ifndef MIN
+#define MIN(a, b) (((a) < (b)) ? (a) : (b))
+#endif
+
 #define USE_INT10 1
 
 /* Required Functions: */
@@ -1530,7 +1534,7 @@ TDFXLoadPalette16(ScrnInfoPtr pScrn, int numColors, int *indices, LOCO *colors,
   for (i=0; i<numColors; i++) {
     index=indices[i];
     v=(colors[index/2].red<<16)|(colors[index].green<<8)|colors[index/2].blue;
-    max=min((index+1)<<2, 256);
+    max=MIN((index+1)<<2, 256);
     for (j = index<<2; j < max; j++)
     {
       repeat=100;
