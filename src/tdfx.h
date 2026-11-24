@@ -36,6 +36,7 @@
 #define TDFX_MAJOR_VERSION PACKAGE_VERSION_MAJOR
 #define TDFX_MINOR_VERSION PACKAGE_VERSION_MINOR
 #define TDFX_PATCHLEVEL PACKAGE_VERSION_PATCHLEVEL
+#define TDFX_VERSION_SUFFIX PACKAGE_VERSION_SUFFIX
 
 /* Macros to aid source compatibility between pci-rework and "classic" builds.
  */

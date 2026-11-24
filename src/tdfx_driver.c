@@ -222,6 +222,9 @@ static XF86ModuleVersionInfo tdfxVersRec =
 };
 
 _X_EXPORT XF86ModuleData tdfxModuleData = {&tdfxVersRec, tdfxSetup, 0};
+#ifdef XF86_MODULE_VERSION_SUFFIX
+XF86_MODULE_VERSION_SUFFIX(tdfx, TDFX_VERSION_SUFFIX);
+#endif
 
 static void*
 tdfxSetup(void *module, void *opts, int *errmaj, int *errmin)
