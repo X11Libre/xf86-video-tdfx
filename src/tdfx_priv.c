@@ -194,7 +194,7 @@ Bool TDFXInitFifo(ScreenPtr pScreen)
 #ifdef DEBUG_FIFO
   pTDFX->fifoMirrorBase=0;
 #endif
-  pTDFX->fifoBase = (uint32*)(pTDFX->FbBase+pTDFX->fifoOffset);
+  pTDFX->fifoBase = (uint32*)((unsigned char *)pTDFX->FbBase+pTDFX->fifoOffset);
 #ifdef DEBUG_FIFO
   pTDFX->fifoMirrorBase = malloc(pTDFX->fifoSize);
   pTDFX->fifoMirrorPtr = pTDFX->fifoMirrorBase;
@@ -276,7 +276,7 @@ TDFXMakeSpace(TDFXPtr pTDFX, uint32 slots)
     ** below.
     */
     do {
-      pTDFX->fifoRead = (uint32*)(pTDFX->FbBase + GetReadPtr(pTDFX));
+      pTDFX->fifoRead = (uint32*)((unsigned char *)pTDFX->FbBase + GetReadPtr(pTDFX));
     }
     while (pTDFX->fifoRead>pTDFX->fifoPtr ||
 	   pTDFX->fifoRead == pTDFX->fifoBase);
@@ -305,7 +305,7 @@ TDFXMakeSpace(TDFXPtr pTDFX, uint32 slots)
   ** Wait for enough slots to satisfy the request.
   */
   do {
-    pTDFX->fifoRead = (uint32*)(pTDFX->FbBase + GetReadPtr(pTDFX));
+    pTDFX->fifoRead = (uint32*)((unsigned char *)pTDFX->FbBase + GetReadPtr(pTDFX));
 
     /*
     ** If the HW read_ptr is ahead the SW fifo_ptr, we don't allocate the
